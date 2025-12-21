@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:borsa_now_bis/core/routes/app_routes.dart';
 import 'package:borsa_now_bis/core/services/auth_services.dart';
+import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -113,10 +114,11 @@ Widget getLoader() {
 }
 
 Widget getPriceInText(double price, [TextStyle? style, double? pictureWidth]) {
+  bool isInt = price % 1 == 0;
   return Row(
     children: [
       Text(
-        price.toStringAsFixed(2),
+        isInt ? price.toInt().toString() : price.toStringAsFixed(2),
         style:
             style ??
             TextStyle(
@@ -233,6 +235,7 @@ TweenAnimationBuilder<double> buildTitle(String title) {
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
               fontSize: 24,
               fontWeight: FontWeight.w800,
+              color: HexColor.fromHex(AppTheme.primaryColor)
             ),
           ),
         ),
@@ -558,6 +561,7 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
 AppBar buildAppBar2(BuildContext context, [bool? autoBack = false,Function(String value)? onSearchSubmitted, List? actions]) {
   final ValueNotifier<double> widthSearchBox = ValueNotifier(57);
   TextEditingController searchController = TextEditingController();
+  final HomePageController _homePageController = getIt();
   return AppBar(
     backgroundColor: HexColor.fromHex(AppTheme.appBackGroundColor),
     elevation: 0,
@@ -762,34 +766,49 @@ AppBar buildAppBar2(BuildContext context, [bool? autoBack = false,Function(Strin
                   opacity: value.clamp(0.0, 1.0),
                   child: Material(
                     color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                      },
-                      borderRadius: BorderRadius.circular(30),
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        width: size == 250 ? 0 : 55,
-                        height: size == 250 ? 0 : 55,
-                        padding: EdgeInsets.all(15),
-                        margin: EdgeInsets.symmetric(horizontal: 15),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: HexColor.fromHex(AppTheme.borderGrey),
+                    child: ValueListenableBuilder(
+                      valueListenable: _homePageController.cartProducts,
+                      builder: (context,val,_) {
+                        return InkWell(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.cart);
+                          },
+                          borderRadius: BorderRadius.circular(30),
+                          child: Stack(
+                            children: [
+                              AnimatedContainer(
+                                duration: Duration(milliseconds: 300),
+                                width: size == 250 ? 0 : 55,
+                                height: size == 250 ? 0 : 55,
+                                padding: EdgeInsets.all(15),
+                                margin: EdgeInsets.symmetric(horizontal: 15),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: HexColor.fromHex(AppTheme.borderGrey),
+                                  ),
+
+                                ),
+                                child: SvgPicture.asset(
+                                  "assets/icons/cart.svg",
+                                ),
+                              ),
+                              Positioned(
+
+                                  right: 10,
+                                  top:0,
+                                  child: Container(
+                                    padding: EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: HexColor.fromHex(AppTheme.primaryColor)
+                                      ),
+                                      child: Text("${val.length}",style: TextStyle(color: Colors.white),)))
+                            ],
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 5,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: SvgPicture.asset(
-                          "assets/icons/cart.svg",
-                        ),
-                      ),
+                        );
+                      }
                     ),
                   ),
                 ),

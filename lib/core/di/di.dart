@@ -6,6 +6,8 @@ import 'package:borsa_now_bis/screens/my_account/presentation/manager/my_account
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../screens/favourite/controller/favourite_controller.dart';
+import '../../screens/favourite/service/my_favourtie_service.dart';
 import '../../screens/home_page/presentation/manager/home_page_controller.dart';
 import '../../screens/login/presentation/manager/login_controller.dart';
 import '../../screens/sign_up/presentation/controller/sign_up_controller.dart';
@@ -35,5 +37,7 @@ Future<void> setup() async {
   getIt.registerLazySingleton(()=>HomePageController(getIt()));
   getIt.registerLazySingleton(()=>MyAccountServices(getIt(),getIt()));
   getIt.registerLazySingleton(()=>MyAccountController(getIt()));
+  getIt.registerLazySingleton(()=>MyFavouriteService(getIt()));
+  getIt.registerLazySingleton(()=>FavouriteController(getIt()));
 
 }

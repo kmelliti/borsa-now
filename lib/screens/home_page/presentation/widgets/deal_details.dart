@@ -11,6 +11,7 @@ import 'package:readmore/readmore.dart';
 
 import '../../../../core/config/app_constants.dart';
 import '../../../../core/config/bottom_navigator.dart';
+import '../../../../core/models/product_model.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../payment/presentation/pages/payment_page.dart';
 import '../../data/models/deal_product_model.dart';
@@ -43,177 +44,169 @@ class _DealDetailsState extends State<DealDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Container(
-        width: double.infinity,
-        height: 45,
-        margin: EdgeInsets.symmetric(horizontal: 20),
-        child: FloatingActionButton.extended(
-          heroTag: "buy_now",
-          onPressed: () {
-            Get.to(PaymentMethodsPage());
-          },
-          backgroundColor: HexColor.fromHex(AppTheme.primaryColor),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            // Custom shape
-            borderRadius: BorderRadius.circular(30),
-          ),
-          label: Text(
-            "buy_now".tr,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          icon: null,
+      appBar: buildAppBar2(context),
+      bottomNavigationBar: Container(
+        height: 180,
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            ElevatedButton(onPressed: (){
+              _homePageController.addCartProducts(mockProductModel());
+            }, child: Text("add_to_cart".tr),style: AppTheme.outlinedButtonStyle,),
+
+            SizedBox(height: 10,),
+
+            ElevatedButton(onPressed: (){}, child: Text("buy_now".tr)),
+          ],
         ),
       ),
+
       body: SingleChildScrollView(
         controller: _controller,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              children: [
-                SizedBox(
-                  height: 400,
-                  child: PageView(
-                    onPageChanged: (int currentIndex) {
-                      sliderIndex.value = currentIndex;
-                    },
-                    children:
-                        widget.dealModel.product.productPictures.map((im) {
-                          return ImageColorBuilder(
-                            url: "${baseUrlImage}/${im.picture}",
-                            fit: BoxFit.cover,
-                            builder:
-                                (
-                                  BuildContext context,
-                                  Image? image,
-                                  Color? imageColor,
-                                ) {
-                                  return Container(
-
-                                    // padding: EdgeInsets.symmetric(vertical: 20),
-                                    decoration: BoxDecoration(
-                                      color: imageColor,
-                                    ),
-                                    child: image,
-                                  );
-                                },
-                          );
-
-                        }).toList(),
-                  ),
-                ),
-
-                Positioned(
-                  top: 60,
-                  right: 20,
-                  left: 20,
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-
-                            border: Border.all(
-                              color: HexColor.fromHex(AppTheme.borderGrey),
-                            ),
-                          ),
-                          child: Icon(Icons.arrow_back),
-                        ),
-                      ),
-                      Spacer(),
-                      Container(
-                        width: 50,
-                        height: 50,
-                        padding: EdgeInsets.all(15),
-                        margin: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-
-                          border: Border.all(
-                            color: HexColor.fromHex(AppTheme.borderGrey),
-                          ),
-                        ),
-                        child: SvgPicture.asset("assets/icons/share.svg"),
-                      ),
-                      InkWell(
-                        onTap: () async{
-                          isFavorite.value = !isFavorite.value;
-                          _homePageController.addDeleteFav({
-                            "wholesale_offer_id":widget.dealModel.id,
-                          });
-
-                        },
-                        child: Container(
-                          width: 50,
-                          height: 50,
-
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: HexColor.fromHex(AppTheme.borderGrey),
-                            ),
-                          ),
-                          child: ValueListenableBuilder(
-                            valueListenable: isFavorite,
-                            builder: (context,fav,_) {
-                              return Center(child: Icon(fav ? Icons.favorite :Icons.favorite_border,color: HexColor.fromHex(AppTheme.primaryColor),));
-                            }
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 20,
-                  left: 0,
-                  right: 0,
-                  child: ValueListenableBuilder(
-                    valueListenable: sliderIndex,
-                    builder: (context, index, _) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children:
-                            widget.dealModel.product.productPictures.map((im) {
-                              return Container(
-                                width: 10,
-                                height: 10,
-                                margin: EdgeInsets.symmetric(horizontal: 3),
-                                decoration: BoxDecoration(
-                                  color:
-                                      widget.dealModel
-                                                  .product
-                                                  .productPictures[index] ==
-                                              im
-                                          ? HexColor.fromHex(
-                                            AppTheme.primaryColor,
-                                          )
-                                          : HexColor.fromHex(
-                                            AppTheme.secondaryColor,
-                                          ),
-                                  shape: BoxShape.circle,
-                                ),
-                              );
-                            }).toList(),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+            // Stack(
+            //   children: [
+            //     SizedBox(
+            //       height: 400,
+            //       child: PageView(
+            //         onPageChanged: (int currentIndex) {
+            //           sliderIndex.value = currentIndex;
+            //         },
+            //         children:
+            //             widget.dealModel.product.productPictures.map((im) {
+            //               return ImageColorBuilder(
+            //                 url: "${baseUrlImage}/${im.picture}",
+            //                 fit: BoxFit.cover,
+            //                 builder:
+            //                     (
+            //                       BuildContext context,
+            //                       Image? image,
+            //                       Color? imageColor,
+            //                     ) {
+            //                       return Container(
+            //
+            //                         // padding: EdgeInsets.symmetric(vertical: 20),
+            //                         decoration: BoxDecoration(
+            //                           color: imageColor,
+            //                         ),
+            //                         child: image,
+            //                       );
+            //                     },
+            //               );
+            //
+            //             }).toList(),
+            //       ),
+            //     ),
+            //
+            //     Positioned(
+            //       top: 60,
+            //       right: 20,
+            //       left: 20,
+            //       child: Row(
+            //         children: [
+            //           InkWell(
+            //             onTap: () {
+            //               Get.back();
+            //             },
+            //             child: Container(
+            //               padding: EdgeInsets.all(10),
+            //               margin: EdgeInsets.symmetric(horizontal: 5),
+            //               decoration: BoxDecoration(
+            //                 color: Colors.white,
+            //                 shape: BoxShape.circle,
+            //
+            //                 border: Border.all(
+            //                   color: HexColor.fromHex(AppTheme.borderGrey),
+            //                 ),
+            //               ),
+            //               child: Icon(Icons.arrow_back),
+            //             ),
+            //           ),
+            //           Spacer(),
+            //           Container(
+            //             width: 50,
+            //             height: 50,
+            //             padding: EdgeInsets.all(15),
+            //             margin: EdgeInsets.symmetric(horizontal: 10),
+            //             decoration: BoxDecoration(
+            //               color: Colors.white,
+            //               shape: BoxShape.circle,
+            //
+            //               border: Border.all(
+            //                 color: HexColor.fromHex(AppTheme.borderGrey),
+            //               ),
+            //             ),
+            //             child: SvgPicture.asset("assets/icons/share.svg"),
+            //           ),
+            //           InkWell(
+            //             onTap: () async{
+            //               isFavorite.value = !isFavorite.value;
+            //               _homePageController.addDeleteFav({
+            //                 "wholesale_offer_id":widget.dealModel.id,
+            //               });
+            //
+            //             },
+            //             child: Container(
+            //               width: 50,
+            //               height: 50,
+            //
+            //               decoration: BoxDecoration(
+            //                 color: Colors.white,
+            //                 shape: BoxShape.circle,
+            //                 border: Border.all(
+            //                   color: HexColor.fromHex(AppTheme.borderGrey),
+            //                 ),
+            //               ),
+            //               child: ValueListenableBuilder(
+            //                 valueListenable: isFavorite,
+            //                 builder: (context,fav,_) {
+            //                   return Center(child: Icon(fav ? Icons.favorite :Icons.favorite_border,color: HexColor.fromHex(AppTheme.primaryColor),));
+            //                 }
+            //               ),
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     Positioned(
+            //       bottom: 20,
+            //       left: 0,
+            //       right: 0,
+            //       child: ValueListenableBuilder(
+            //         valueListenable: sliderIndex,
+            //         builder: (context, index, _) {
+            //           return Row(
+            //             mainAxisAlignment: MainAxisAlignment.center,
+            //             children:
+            //                 widget.dealModel.product.productPictures.map((im) {
+            //                   return Container(
+            //                     width: 10,
+            //                     height: 10,
+            //                     margin: EdgeInsets.symmetric(horizontal: 3),
+            //                     decoration: BoxDecoration(
+            //                       color:
+            //                           widget.dealModel
+            //                                       .product
+            //                                       .productPictures[index] ==
+            //                                   im
+            //                               ? HexColor.fromHex(
+            //                                 AppTheme.primaryColor,
+            //                               )
+            //                               : HexColor.fromHex(
+            //                                 AppTheme.secondaryColor,
+            //                               ),
+            //                       shape: BoxShape.circle,
+            //                     ),
+            //                   );
+            //                 }).toList(),
+            //           );
+            //         },
+            //       ),
+            //     ),
+            //   ],
+            // ),
             Container(
               margin: EdgeInsets.all(20),
               child: Column(

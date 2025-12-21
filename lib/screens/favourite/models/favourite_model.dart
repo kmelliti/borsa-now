@@ -1,22 +1,23 @@
 // To parse this JSON data, do
 //
-//     final dealProductModel = dealProductModelFromJson(jsonString);
+//     final favouriteModel = favouriteModelFromJson(jsonString);
 
 import 'dart:convert';
 
-DealProductModel dealProductModelFromJson(String str) => DealProductModel.fromJson(json.decode(str));
+List<FavouriteModel> favouriteModelFromJson(String str) => List<FavouriteModel>.from(json.decode(str).map((x) => FavouriteModel.fromJson(x)));
 
-String dealProductModelToJson(DealProductModel data) => json.encode(data.toJson());
+String favouriteModelToJson(List<FavouriteModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class DealProductModel {
+class FavouriteModel {
   int id;
   int merchantId;
   int productId;
   int quantity;
-  int quantitySold;
+  String storePrice;
   String wholesalePrice;
   String retailPrice;
-  dynamic minInvestment;
+  String minInvestment;
+  int quantitySold;
   String totalInvested;
   String targetAmount;
   String status;
@@ -30,18 +31,18 @@ class DealProductModel {
   DateTime createdAt;
   DateTime updatedAt;
   bool isFavorite;
-  PModel product;
-  double? rating;
+  Product product;
 
-  DealProductModel({
+  FavouriteModel({
     required this.id,
     required this.merchantId,
     required this.productId,
     required this.quantity,
-    required this.quantitySold,
+    required this.storePrice,
     required this.wholesalePrice,
     required this.retailPrice,
     required this.minInvestment,
+    required this.quantitySold,
     required this.totalInvested,
     required this.targetAmount,
     required this.status,
@@ -56,18 +57,18 @@ class DealProductModel {
     required this.updatedAt,
     required this.isFavorite,
     required this.product,
-    required this.rating,
   });
 
-  factory DealProductModel.fromJson(Map<String, dynamic> json) => DealProductModel(
+  factory FavouriteModel.fromJson(Map<String, dynamic> json) => FavouriteModel(
     id: json["id"],
     merchantId: json["merchant_id"],
     productId: json["product_id"],
     quantity: json["quantity"],
-    quantitySold: json["quantity_sold"],
+    storePrice: json["store_price"],
     wholesalePrice: json["wholesale_price"],
     retailPrice: json["retail_price"],
     minInvestment: json["min_investment"],
+    quantitySold: json["quantity_sold"],
     totalInvested: json["total_invested"],
     targetAmount: json["target_amount"],
     status: json["status"],
@@ -81,8 +82,7 @@ class DealProductModel {
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     isFavorite: json["is_favorite"],
-    product: PModel.fromJson(json["product"]),
-    rating: json["rating"],
+    product: Product.fromJson(json["product"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -90,10 +90,11 @@ class DealProductModel {
     "merchant_id": merchantId,
     "product_id": productId,
     "quantity": quantity,
-    "quantity_sold": quantitySold,
+    "store_price": storePrice,
     "wholesale_price": wholesalePrice,
     "retail_price": retailPrice,
     "min_investment": minInvestment,
+    "quantity_sold": quantitySold,
     "total_invested": totalInvested,
     "target_amount": targetAmount,
     "status": status,
@@ -111,7 +112,7 @@ class DealProductModel {
   };
 }
 
-class PModel {
+class Product {
   int id;
   int merchantId;
   int productCategorieId;
@@ -120,7 +121,7 @@ class PModel {
   String description;
   String costBasis;
   int isDeleted;
-
+  dynamic deletedAt;
   int createdBy;
   dynamic updatedBy;
   dynamic deletedBy;
@@ -128,7 +129,7 @@ class PModel {
   DateTime updatedAt;
   List<ProductPicture> productPictures;
 
-  PModel({
+  Product({
     required this.id,
     required this.merchantId,
     required this.productCategorieId,
@@ -137,7 +138,7 @@ class PModel {
     required this.description,
     required this.costBasis,
     required this.isDeleted,
-
+    required this.deletedAt,
     required this.createdBy,
     required this.updatedBy,
     required this.deletedBy,
@@ -146,7 +147,7 @@ class PModel {
     required this.productPictures,
   });
 
-  factory PModel.fromJson(Map<String, dynamic> json) => PModel(
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
     id: json["id"],
     merchantId: json["merchant_id"],
     productCategorieId: json["product_categorie_id"],
@@ -155,7 +156,7 @@ class PModel {
     description: json["description"],
     costBasis: json["cost_basis"],
     isDeleted: json["is_deleted"],
-
+    deletedAt: json["deleted_at"],
     createdBy: json["created_by"],
     updatedBy: json["updated_by"],
     deletedBy: json["deleted_by"],
@@ -173,7 +174,7 @@ class PModel {
     "description": description,
     "cost_basis": costBasis,
     "is_deleted": isDeleted,
-
+    "deleted_at": deletedAt,
     "created_by": createdBy,
     "updated_by": updatedBy,
     "deleted_by": deletedBy,

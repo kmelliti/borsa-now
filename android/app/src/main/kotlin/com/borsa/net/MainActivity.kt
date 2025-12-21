@@ -1,4 +1,4 @@
-package com.example.borsa_now_bis
+package com.borsa.net
 
 import io.flutter.embedding.android.FlutterActivity
 

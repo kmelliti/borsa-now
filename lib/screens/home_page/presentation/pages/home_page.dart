@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:borsa_now_bis/core/config/utils.dart';
+import 'package:borsa_now_bis/core/routes/app_routes.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/deal_product_model.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
@@ -15,6 +16,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../../../core/config/bottom_navigator.dart';
 import '../../../../core/di/di.dart';
 import '../../../../core/widgets/filters.dart';
+import '../widgets/deal_details.dart';
 import '../widgets/promos_widget.dart';
 import '../widgets/single_item_shopping_list.dart';
 
@@ -214,7 +216,11 @@ class _HomePageState extends State<HomePage> {
 
                   // Build your grid tiles
                   builderDelegate: PagedChildBuilderDelegate<DealProductModel>(
-                    itemBuilder: (context, item, index) => pushUpAnimation(SingleItemShoppingGrid(dealProductModel: item,)),
+                    itemBuilder: (context, item, index) => pushUpAnimation(InkWell(
+                        onTap: (){
+                          Get.to(DealDetails(dealModel: item));
+                        },
+                        child: SingleItemShoppingGrid(dealProductModel: item,))),
                   ),
                 ),
               ),

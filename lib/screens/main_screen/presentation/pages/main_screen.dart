@@ -1,12 +1,12 @@
 import 'package:borsa_now_bis/core/config/bottom_navigator.dart';
+import 'package:borsa_now_bis/screens/favourite/pages/favourite_page.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/pages/home_page.dart';
+import 'package:borsa_now_bis/screens/my_orders/pages/my_orders.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/config/app_constants.dart';
 import '../../../my_account/presentation/pages/my_account.dart';
-import '../../../my_deals/presentation/pages/my_deals.dart';
-import '../../../my_wallet/presentation/pages/my_wallet.dart';
 
 class MainScreen extends StatelessWidget {
   MainScreen({super.key});
@@ -36,11 +36,11 @@ class MainScreen extends StatelessWidget {
               return MyAccount();
 
             case 1:
-              return MyWallet();
+              return MyOrders();
             case 2:
               return HomePage(key: Key("home"),);
             case 3:
-              return MyDeals(key: Key("myDeals"),);
+              return MyFavourites();
             case 4:
               return MyAccount();
 

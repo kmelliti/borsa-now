@@ -35,6 +35,9 @@ class AppTheme {
   static final String hintColor2 = "#717088";
   static final String itemBorderColor = "#F3F3F4";
   static final String textColor = "#1E1D33";
+  static final String stroke = "#F3F3F4";
+  static final String strokeS3 = "#EBEBEB";
+  static final String textDate = "#9B9B9B";
 
 
   // Text Styles

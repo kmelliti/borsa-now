@@ -20,7 +20,6 @@ class ReviewResponseModel {
   String path;
   int perPage;
   dynamic prevPageUrl;
-  int to;
   int total;
 
   ReviewResponseModel({
@@ -35,7 +34,7 @@ class ReviewResponseModel {
     required this.path,
     required this.perPage,
     required this.prevPageUrl,
-    required this.to,
+
     required this.total,
   });
 
@@ -51,7 +50,7 @@ class ReviewResponseModel {
     path: json["path"],
     perPage: json["per_page"],
     prevPageUrl: json["prev_page_url"],
-    to: json["to"],
+
     total: json["total"],
   );
 
@@ -67,7 +66,7 @@ class ReviewResponseModel {
     "path": path,
     "per_page": perPage,
     "prev_page_url": prevPageUrl,
-    "to": to,
+
     "total": total,
   };
 }
