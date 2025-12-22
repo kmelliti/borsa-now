@@ -305,9 +305,10 @@ class _AddressState extends State<Address> {
                     isScrollControlled: true,
                     showDragHandle: true,
                     context: context, builder: (c){
-                  return EditAddress(user: user,
-
-                  );
+                  // return EditAddress(user: user,
+                  //
+                  // );
+                  return Container();
                 });
                 if(newUser != null){
                   setState(() {

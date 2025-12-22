@@ -38,6 +38,7 @@ class AppTheme {
   static final String stroke = "#F3F3F4";
   static final String strokeS3 = "#EBEBEB";
   static final String textDate = "#9B9B9B";
+  static final String bold1 = "#393942";
 
 
   // Text Styles

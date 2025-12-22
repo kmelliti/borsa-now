@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/config/utils.dart';
+import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 
 class SingleOrder extends StatelessWidget {
@@ -54,7 +55,9 @@ class SingleOrder extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20,),
-            ElevatedButton(onPressed: (){}, child: Text("details".tr),style: AppTheme.outlinedButtonStyle,)
+            ElevatedButton(onPressed: (){
+              Get.toNamed(AppRoutes.orderDetails);
+            }, child: Text("details".tr),style: AppTheme.outlinedButtonStyle,)
           ],
         ),
       ),

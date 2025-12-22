@@ -1,16 +1,14 @@
-import 'package:borsa_now_bis/screens/main_screen/presentation/pages/main_screen.dart';
-import 'package:borsa_now_bis/screens/sign_up/widgets/bank_step.dart';
-import 'package:borsa_now_bis/screens/sign_up/widgets/identity_step.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
 
 import '../../../../core/config/utils.dart';
 import '../../../../core/di/di.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../widgets/address_step.dart';
+
 import '../../widgets/create_password_step.dart';
-import '../../widgets/personal_information_step.dart';
+import '../../widgets/contact_step.dart';
+
 import '../controller/sign_up_controller.dart';
 
 class SignUp extends StatefulWidget {
@@ -20,14 +18,22 @@ class SignUp extends StatefulWidget {
   State<SignUp> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin{
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final int _totalPages = 5;
+  final int _totalPages = 2;
+  late final  AnimationController _animationController ;
 
   final SignUpController _signUpController = getIt();
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this,duration: Duration(milliseconds: 1500))..repeat();
+  }
   @override
   void dispose() {
+    _animationController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -52,7 +58,6 @@ class _SignUpState extends State<SignUp> {
                 child: InkWell(
                   onTap: () {
                     _signUpController.showExitAlert(context);
-
                   },
                   child: Container(
                     padding: EdgeInsets.all(10),
@@ -74,7 +79,11 @@ class _SignUpState extends State<SignUp> {
         ),
         title: Text(
           'create_account'.tr,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(
             color: HexColor.fromHex(AppTheme.primaryColor),
             fontWeight: FontWeight.w800,
             fontSize: 24,
@@ -89,7 +98,7 @@ class _SignUpState extends State<SignUp> {
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [getStepName(context), getPageNumber()],
+              children: [Container(), getPageNumber()],
             ),
             const SizedBox(height: 10),
             LinearProgressIndicator(
@@ -111,32 +120,9 @@ class _SignUpState extends State<SignUp> {
                   });
                 },
                 children: [
-                  PersonalInformationStep(
-                    onNextStep: () {
-                      setState(() {
-                        _pageController.nextPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOut,
-                        );
-                      });
-                    },
-                  ),
-                  AddressStep(onNextStep: () {
-                    setState(() {
-                      _pageController.nextPage(
-                        duration: Duration(milliseconds: 500),
-                        curve: Curves.easeInOut,
-                      );
-                    });
-                   }, onBackStep: () {
-                    setState(() {
-                      _pageController.previousPage(
-                        duration: Duration(milliseconds: 500),
-                        curve: Curves.easeInOut,
-                      );
-                    });
-                   },), // Placeholder for step 2
-                  IdentityStep(
+
+                  // Placeholder for step 2
+                  ContactStep(
                     onNextStep: () {
                       setState(() {
                         _pageController.nextPage(
@@ -154,27 +140,10 @@ class _SignUpState extends State<SignUp> {
                       });
                     },
                   ), // Placeholder for step 3
-                  BankInfoStep(
-                    onNextStep: () {
-                      setState(() {
-                        _pageController.nextPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOut,
-                        );
-                      });
-                    },
-                    onBackStep: () {
-                      setState(() {
-                        _pageController.previousPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOut,
-                        );
-                      });
-                    },
-                  ), // Placeholder for step 4
+
                   CreatePasswordStep(
                     onNextStep: () {
-                      Get.to(MainScreen());
+                      //Get.to(MainScreen());
                     },
                     onBackStep: () {
                       setState(() {
@@ -194,30 +163,58 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Text getStepName(BuildContext context) {
-    return Text(
-      'personal_information'.tr,
-      style: Theme.of(
-        context,
-      ).textTheme.bodyMedium?.copyWith(color: HexColor.fromHex("#393942")),
-    );
+  Text getStepName(BuildContext context, int pageNumber) {
+    switch (pageNumber) {
+      case 0:
+        return Text(
+          'communication_creds'.tr,
+          style: Theme
+              .of(
+            context,
+          )
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: HexColor.fromHex("#393942")),
+        );
+      case 1 :
+        return Text(
+          'company_info'.tr,
+          style: Theme
+              .of(
+            context,
+          )
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: HexColor.fromHex("#393942")),
+        );
+      default:
+        return Text("");
+    }
   }
 
   getPageNumber() {
     return Row(
       children: [
         Text(
-         ( _currentPage +1 ).toString(),
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          (_currentPage + 1).toString(),
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(
             color: HexColor.fromHex(AppTheme.primaryColor),
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           "/${_totalPages.toString()}",
-          style: Theme.of(
+          style: Theme
+              .of(
             context,
-          ).textTheme.bodyMedium?.copyWith(color: HexColor.fromHex("#DEDDFF")),
+          )
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: HexColor.fromHex("#DEDDFF")),
         ),
       ],
     );

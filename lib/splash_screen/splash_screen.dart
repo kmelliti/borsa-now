@@ -22,8 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
     // TODO: implement initState
     super.initState();
     try {
-      appServices.getCities();
-      appServices.getBanks();
+      // appServices.getCities();
+      // appServices.getBanks();
     } catch (e, s) {
       log("$e , $s");
     }

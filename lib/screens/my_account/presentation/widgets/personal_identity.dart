@@ -35,8 +35,8 @@ class _PersonalIdentityState extends State<PersonalIdentity> {
   @override
   void initState() {
     userModel = _appServices.getUser();
-    idNumberController.text = userModel.investor.idNumber ?? "";
-    documentName = userModel.investor.idDocumentPath.split("/").last ?? "";
+    // idNumberController.text = userModel.investor.idNumber ?? "";
+    // documentName = userModel.investor.idDocumentPath.split("/").last ?? "";
 
     super.initState();
   }

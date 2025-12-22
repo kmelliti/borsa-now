@@ -218,6 +218,14 @@ class AppTranslation extends Translations {
 
       "order_id":"رقم الطلب",
       "track_id":" رقم التتبع",
+      "upload_image":"رفع الصورة",
+      "invalid_phone_number":"رقم الجوال غير صالح",
+      "request_number":"الطلب رقم",
+      "request_info":"معلومات الطلب",
+      "payment_method":"طريقة الدفع",
+      "reorder":"إعادة الطلب",
+      "leave_comment":"اترك تقييمك"
+
 
     },
   };

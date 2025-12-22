@@ -12,6 +12,7 @@ import '../../screens/my_account/presentation/widgets/bank_info.dart';
 import '../../screens/my_account/presentation/widgets/password_page.dart';
 import '../../screens/my_account/presentation/widgets/personal_identity.dart';
 import '../../screens/my_account/presentation/widgets/personal_info.dart';
+import '../../screens/my_orders/pages/order_details.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -26,6 +27,7 @@ class AppRoutes {
   static const String password = '/password';
   static const String cart = '/cart';
   static const String myOrders = '/my_orders';
+  static const String orderDetails = '/order_details';
 
   static final routes = [
     GetPage(name: login, page: () =>  LoginPage()),
@@ -40,5 +42,6 @@ class AppRoutes {
     GetPage(name: password, page: () =>  PasswordPage()),
     GetPage(name: cart, page: () =>  CartPage()),
     GetPage(name: myOrders, page: () =>  MyOrders()),
+    GetPage(name: orderDetails, page: () =>  OrderDetails()),
   ];
 }

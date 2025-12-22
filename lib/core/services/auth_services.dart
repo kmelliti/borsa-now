@@ -21,15 +21,13 @@ class AuthService{
 
       log(accountCreationParams.toJson().toString());
       FormData formData = FormData.fromMap(accountCreationParams.toJson());
-      if(accountCreationParams.idDocumentPath != null) {
-        formData.files.add(MapEntry("id_document_path", await MultipartFile.fromFile(accountCreationParams.idDocumentPath!)));
-      }
+
       if(accountCreationParams.picture != null) {
         formData.files.add(MapEntry("picture", await MultipartFile.fromFile(accountCreationParams.picture!)));
       }
 
       final response = await _dio.post(
-        'BorsaNow/public/api/v1/investor/register/${getLang()}',
+        'BorsaNow/public/api/v1/customer/register/${getLang()}',
         data: formData,
       );
       print("Data ${response.data} ");
@@ -47,7 +45,7 @@ class AuthService{
   Future<UserModel> signIn(String email, String password) async {
     try {
       final response = await _dio.post(
-        'BorsaNow/public/api/v1/investor/login/${getLang()}',
+        'BorsaNow/public/api/v1/customer/login/${getLang()}',
         data: FormData.fromMap({
           "email": email,
           "password": password,
@@ -74,7 +72,7 @@ class AuthService{
   Future<UserModel> getUser() async {
     try {
       final response = await _dio.get(
-        'BorsaNow/public/api/v1/investor/${getLang()}',
+        'BorsaNow/public/api/v1/customer/${getLang()}',
         queryParameters: {
           "token":appServices.getToken()
         }

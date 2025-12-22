@@ -48,10 +48,10 @@ class MyAccountServices {
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
       }
-      Investor investor = Investor.fromJson(response.data['data']);
-      UserModel userModel = appServices.getUser();
-      userModel.investor = investor;
-      appServices.setUser(userModel);
+      // Investor investor = Investor.fromJson(response.data['data']);
+       UserModel userModel = appServices.getUser();
+      // userModel.investor = investor;
+      // appServices.setUser(userModel);
       return userModel ;
     } catch (e) {
       throw e;
@@ -75,9 +75,9 @@ class MyAccountServices {
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
       }
-      Investor investor = Investor.fromJson(response.data['data']);
+    //  Investor investor = Investor.fromJson(response.data['data']);
       UserModel userModel = appServices.getUser();
-      userModel.investor = investor;
+     // userModel.investor = investor;
       appServices.setUser(userModel);
       return userModel ;
     } catch (e) {
@@ -95,9 +95,9 @@ class MyAccountServices {
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
       }
-      Investor investor = Investor.fromJson(response.data['data']);
+      //Investor investor = Investor.fromJson(response.data['data']);
       UserModel userModel = appServices.getUser();
-      userModel.investor = investor;
+    //  userModel.investor = investor;
       appServices.setUser(userModel);
       return userModel ;
     } catch (e) {

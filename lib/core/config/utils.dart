@@ -113,6 +113,10 @@ Widget getLoader() {
   );
 }
 
+bool isValidSaudiPhone(String phone) {
+  return phone.startsWith("05") && phone.length == 10;
+}
+
 Widget getPriceInText(double price, [TextStyle? style, double? pictureWidth]) {
   bool isInt = price % 1 == 0;
   return Row(

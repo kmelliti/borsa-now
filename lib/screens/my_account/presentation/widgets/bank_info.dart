@@ -39,9 +39,9 @@ class BankInfo extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              bounceAnimation(
-                c: EditBankInfo(),
-              ),
+              // bounceAnimation(
+              //   c: EditBankInfo(),
+              // ),
             ],
           ),
         ),
