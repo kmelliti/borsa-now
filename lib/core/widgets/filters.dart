@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:borsa_now_bis/core/config/utils.dart';
 import 'package:borsa_now_bis/core/models/lookup_model.dart';
@@ -15,8 +16,9 @@ import '../services/app_service.dart';
 typedef FilterCallback = void Function(Map<String, dynamic> filters);
 
 class Filters extends StatefulWidget {
-  const Filters({super.key, required this.onFilter});
+  const Filters({super.key, required this.onFilter, required this.itemsCategory});
 
+  final List<LookUpModel> itemsCategory;
   final FilterCallback onFilter;
 
   @override
@@ -25,12 +27,12 @@ class Filters extends StatefulWidget {
 
 class _FiltersState extends State<Filters> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-  List<LookUpModel> itemsCategory = [];
+  // List<LookUpModel> itemsCategory = [];
   RangeValues _currentPriceRangeValues = const RangeValues(0, 100);
   RangeValues _quantityRangeValues = const RangeValues(0, 50);
   RangeValues _reqQuantityRangeValues = const RangeValues(0, 20);
   bool discounted = false;
-  List<LookUpModel> selectedCategory = [];
+  // List<LookUpModel> selectedCategory = [];
   final ValueNotifier<HashSet<int>> rates = ValueNotifier(HashSet());
   final AppServices appServices = getIt();
 
@@ -39,23 +41,25 @@ class _FiltersState extends State<Filters> {
     rates.value.add(5);
     super.initState();
 
-    appServices.getProductCategories().then((v){
-      Future.delayed(Duration(milliseconds: 300), () {
-        addItems(v);
-      });
-    });
+    // appServices.getProductCategories().then((v){
+    //   // Future.delayed(Duration(milliseconds: 300), () {
+    //   print("v: $v");
+    //     addItems(v);
+    //     print("itemsCategory: $itemsCategory");
+    //   // });
+    // });
   }
 
-  void addItems(List<LookUpModel> newItems) {
-
-
-    for (int i = 0; i < newItems.length; i++) {
-      Future.delayed(Duration(milliseconds: i * 200), () {
-        itemsCategory.add(newItems[i]);
-        _listKey.currentState!.insertItem(itemsCategory.length - 1);
-      });
-    }
-  }
+  // void addItems(List<LookUpModel> newItems) {
+  //
+  //
+  //   for (int i = 0; i < newItems.length; i++) {
+  //     // Future.delayed(Duration(milliseconds: i * 200), () {
+  //       itemsCategory.add(newItems[i]);
+  //       _listKey.currentState!.insertItem(itemsCategory.length - 1);
+  //     // });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -329,17 +333,32 @@ class _FiltersState extends State<Filters> {
         children: [
 
           ElevatedButton(onPressed: () {
+
             Map<String,dynamic> filters = {
-              "quantity_min":_quantityRangeValues.start,
-              "quantity_max":_quantityRangeValues.end,
-              "price_max":_currentPriceRangeValues.end,
-              "price_min":_currentPriceRangeValues.start,
-              "invest_min":_reqQuantityRangeValues.start,
-              "invest_max":_reqQuantityRangeValues.end,
-              "discount":discounted ? 1 :0,
-              "rates":rates.value.map((r)=>r).toList(),
-              "categories":selectedCategory.map((e) => e.id).toList(),
+              // "quantity_min": jsonEncode(_quantityRangeValues.start),
+              // "quantity_max": jsonEncode(_quantityRangeValues.end),
+              // "price_max": jsonEncode(_currentPriceRangeValues.end),
+              // "price_min": jsonEncode(_currentPriceRangeValues.start),
+              // "invest_min": jsonEncode(_reqQuantityRangeValues.start),
+              // "invest_max": jsonEncode(_reqQuantityRangeValues.end),
+              // "discount": jsonEncode(discounted ? 1 :0),
+              // "rates": jsonEncode(rates.value.map((r)=>r).toList()),
+              // "categories": jsonEncode(widget.itemsCategory.where((s) => s.selected == true).toList().map((lm) => lm.id).toList()),
             };
+
+            List categoriesIds = widget.itemsCategory.where((s) => s.selected == true).toList().map((lm) => lm.id).toList();
+            if (categoriesIds.length > 0) {
+              Map<String, dynamic> s = filters ?? Map();
+              s["categories"] = jsonEncode(categoriesIds);
+
+              filters = s;
+            }
+
+
+
+
+
+
             widget.onFilter(filters);
             Get.back();
 
@@ -383,7 +402,7 @@ class _FiltersState extends State<Filters> {
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               key: _listKey,
-              initialItemCount: itemsCategory.length,
+              initialItemCount: widget.itemsCategory.length,
               itemBuilder: (context, index, animation) {
                 return SizeTransition(
                   sizeFactor: animation,
@@ -391,8 +410,7 @@ class _FiltersState extends State<Filters> {
                     margin: EdgeInsets.symmetric(horizontal: 4),
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                      color:
-                          selectedCategory.contains(itemsCategory[index])
+                      color: widget.itemsCategory[index].selected
                               ? HexColor.fromHex("#DEDDFF")
                               : Colors.white,
                       border: Border.all(
@@ -404,19 +422,22 @@ class _FiltersState extends State<Filters> {
                     child: InkWell(
                       onTap: () {
                         setState(() {
-                          if(selectedCategory.contains(itemsCategory[index]))
-                          selectedCategory.remove(itemsCategory[index]);
-                          else
-                          selectedCategory.add(itemsCategory[index]);
+
+                          widget.itemsCategory[index].selected = !widget.itemsCategory[index].selected;
+
+                          // if(selectedCategory.contains(widget.itemsCategory[index]))
+                          // selectedCategory.remove(widget.itemsCategory[index]);
+                          // else
+                          // selectedCategory.add(widget.itemsCategory[index]);
                         });
                       },
                       child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(itemsCategory[index].name),
-                            SizedBox(width: selectedCategory.contains(itemsCategory[index]) ?10:0,),
-                            selectedCategory.contains(itemsCategory[index])
+                            Text(widget.itemsCategory[index].name),
+                            SizedBox(width: widget.itemsCategory[index].selected ? 10 : 0,),
+                            widget.itemsCategory[index].selected
                                 ? Icon(
                                   Icons.check,
                                   color: HexColor.fromHex(

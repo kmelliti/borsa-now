@@ -44,7 +44,7 @@ class _DealDetailsState extends State<DealDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      appBar: buildAppBar2(context),
+      appBar: buildAppBar2(),
       bottomNavigationBar: Container(
         height: 180,
         padding: EdgeInsets.all(20),

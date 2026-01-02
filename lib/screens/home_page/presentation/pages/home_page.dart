@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:borsa_now_bis/core/config/utils.dart';
+import 'package:borsa_now_bis/core/models/lookup_model.dart';
 import 'package:borsa_now_bis/core/routes/app_routes.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
+import 'package:borsa_now_bis/screens/home_page/data/models/brand_model.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/deal_product_model.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/widgets/single_item_shopping_grid.dart';
@@ -16,12 +19,19 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../../../core/config/bottom_navigator.dart';
 import '../../../../core/di/di.dart';
 import '../../../../core/widgets/filters.dart';
+import '../widgets/brands_widget.dart';
+import '../widgets/categories_widget.dart';
 import '../widgets/deal_details.dart';
 import '../widgets/promos_widget.dart';
 import '../widgets/single_item_shopping_list.dart';
 
 ValueNotifier<bool> promosLoading = ValueNotifier(false);
+ValueNotifier<bool> categoriesLoading = ValueNotifier(false);
+ValueNotifier<bool> brandsLoading = ValueNotifier(false);
+
 List promos = [];
+List<LookUpModel> categories = [];
+List<BrandModel> brands = [];
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
@@ -33,16 +43,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final HomePageController _homePageController = getIt<HomePageController>();
 
+  // ValueNotifier<Map<String,dynamic>> filters = ValueNotifier(Map());
   ValueNotifier<Map<String,dynamic>?> filters = ValueNotifier(null);
+
 
   late final _pagingController =  PagingController<int, DealProductModel>(
     // getNextPageKey: (state) => (state.keys?.last ?? 0) + 1,
     getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
-    fetchPage: (pageKey) => _homePageController.getDealProducts(pageKey,filters.value),
-    // fetchPage: (pageKey) async {
-    //   final newItems = await _homePageController.getDealProducts(pageKey,filters.value);
-    //   return newItems; // Return the list of items directly
-    // },
+    fetchPage: (pageKey) => _homePageController.getDealProducts(pageKey, filters.value),
+
   );
 
   @override
@@ -55,10 +64,37 @@ class _HomePageState extends State<HomePage> {
 
   }
 
+  Future<void> fetchCategories() async {
+
+    categoriesLoading.value = true;
+    categories = await _homePageController.getCategories();
+    categoriesLoading.value = false;
+
+  }
+
+  Future<void> fetchBrands() async {
+
+    brandsLoading.value = true;
+    brands = await _homePageController.getBrands();
+    print("brands: $brands");
+    brandsLoading.value = false;
+
+  }
+
   void initState() {
 
 
+    // Map<String, dynamic> s = {
+    //   // "categories": Uri.encodeComponent(jsonEncode([1])),
+    //   "categories": jsonEncode([1]),
+    // };
+    //
+    // filters.value = s;
+
+
     fetchPromos();
+    fetchCategories();
+    fetchBrands();
 
     super.initState();
   }
@@ -68,7 +104,7 @@ class _HomePageState extends State<HomePage> {
 
 
     return Scaffold(
-      appBar: buildAppBar2(context,null,(v){
+      appBar: buildAppBar(context,null,(v){
         log("$v");
         filters.value = {
           "product_name":v
@@ -101,12 +137,13 @@ class _HomePageState extends State<HomePage> {
                       valueListenable: promosLoading,
                       builder: (context, isLoading, _) {
                         return isLoading ?
-                        SizedBox(
-                            height: 106,
-                            child: Center(
-                                child: CircularProgressIndicator()
-                            )
-                        ) :
+                        // SizedBox(
+                        //     height: 126,
+                        //     child: Center(
+                        //         child: CircularProgressIndicator()
+                        //     )
+                        // ) :
+                        ShimmerPromoWidget():
                         PromosWidget(promos: promos,);
                       }
                   ),
@@ -134,58 +171,84 @@ class _HomePageState extends State<HomePage> {
 
                   SizedBox(height: 20),
 
-                  /**********************************************************************/
-                  SizedBox(
-                    height: 39,
-                    child: ListView.separated(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      scrollDirection: Axis.horizontal,
-                      physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics(),
-                      ),
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          // width: 113,
-                          padding: EdgeInsets.only(left: 10, top: 5, right: 5, bottom: 5),
-                          decoration: BoxDecoration(
-                            color: HexColor.fromHex(AppTheme.primaryColor),
-                            borderRadius: BorderRadius.circular(20),
-                            // border: Border.all(color: HexColor.fromHex(AppTheme.borderColor)),
-                          ),
-                          child: Row(
-                            children: [
+                  ValueListenableBuilder(
+                      valueListenable: categoriesLoading,
+                      builder: (context, isLoading, _) {
+                        return isLoading ?
+                        ShimmerFilterWidget() :
+                        CategoriesWidget(categories: categories, onItemClicked: (idsList) {
 
-                              ClipOval(
-                                child: SvgPicture.asset(
-                                  'assets/icons/filter1.svg',
-                                  width: 20, // Specify width and height
-                                  height: 20,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              SizedBox(width: 10,),
-                              Text("التجار الرائجون",
-                                style:  Theme.of(context,).textTheme.bodySmall?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
+                          if (idsList.length > 0) {
+                            Map<String, dynamic> s = filters.value ?? Map();
+                            s["categories"] = jsonEncode(idsList);
+
+                            filters.value = s;
+                          }
+                          else {
+                            filters.value?.remove('categories');
+                          }
+
+                          if (filters.value != null) {
+                            if (filters.value!.isEmpty)
+                              filters.value = null;
+                          }
+
+                          _pagingController.refresh();
+
+                        },);
+                      }
+                  ),
+
+                  SizedBox(height: 40),
 
 
 
-
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return SizedBox(width: 10,);
-                      },
-                      itemCount: 3,
-
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Text("التجار الرائجون", style: Theme.of(context,)
+                            .textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          // color: Colors.white,
+                        ),),
+                        SizedBox(width: 10,),
+                        SvgPicture.asset("assets/icons/arrow.svg", width: 14, height: 12),
+                      ],
                     ),
                   ),
-                  /**********************************************************************/
+
+                  SizedBox(height: 20),
+
+                  ValueListenableBuilder(
+                      valueListenable: brandsLoading,
+                      builder: (context, isLoading, _) {
+                        return isLoading ?
+                        ShimmerFilterWidget() :
+                        BrandsWidget(brands: brands, onItemClicked: (idsList) {
+
+                          if (idsList.length > 0) {
+                            Map<String, dynamic> s = filters.value ?? Map();
+                            s["brands"] = jsonEncode(idsList);
+
+                            filters.value = s;
+                          }
+                          else {
+                            filters.value?.remove('brands');
+                          }
+
+                          if (filters.value != null) {
+                            if (filters.value!.isEmpty)
+                              filters.value = null;
+                          }
+
+                          _pagingController.refresh();
+
+                        },);
+                      }
+                  ),
+
+
 
 
                   /**********************************************************************/
@@ -211,7 +274,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
-                    childAspectRatio: .57,
+                    childAspectRatio: .56,
                   ),
 
                   // Build your grid tiles
@@ -220,7 +283,17 @@ class _HomePageState extends State<HomePage> {
                         onTap: (){
                           Get.to(DealDetails(dealModel: item));
                         },
-                        child: SingleItemShoppingGrid(dealProductModel: item,))),
+                        child: SingleItemShoppingGrid(dealProductModel: item, onFavouriteClicked: () {
+
+                          _homePageController.addDeleteFav({
+                            "wholesale_offer_id":item.id,
+                          });
+
+
+
+
+
+                        },))),
                   ),
                 ),
               ),
@@ -310,10 +383,10 @@ class _HomePageState extends State<HomePage> {
                     return GestureDetector(
                       onTapDown: (details) {
                         // This will be used for the tap effect
-                        if(f!= null){
-                          filters.value = null;
-                          return;
-                        }
+                        // if(f!= null){
+                        //   filters.value = Map();
+                        //   return;
+                        // }
                         showModalBottomSheet(
                           showDragHandle: true,
                           isScrollControlled: true,
@@ -328,9 +401,21 @@ class _HomePageState extends State<HomePage> {
                           ),
                           context: context,
                           builder: (context) {
-                            return Filters(onFilter: (Map<String, dynamic> f) {
+                            return Filters(itemsCategory: categories, onFilter: (Map<String, dynamic> f) {
+
+
                               filters.value = f;
                               _pagingController.refresh();
+
+                              if (filters.value != null) {
+                                if (filters.value!.isEmpty)
+                                  filters.value = null;
+                              }
+
+                              setState(() {
+
+                              });
+
                             },);
                           },
                         );
@@ -409,5 +494,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
 
 

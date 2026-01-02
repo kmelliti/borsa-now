@@ -14,7 +14,7 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      appBar: buildAppBar2(context,true),
+      appBar: buildAppBar(context,true),
       body: Container(
         padding: EdgeInsets.all(20),
         child: Column(

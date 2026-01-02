@@ -224,8 +224,9 @@ class AppTranslation extends Translations {
       "request_info":"معلومات الطلب",
       "payment_method":"طريقة الدفع",
       "reorder":"إعادة الطلب",
-      "leave_comment":"اترك تقييمك"
+      "leave_comment":"اترك تقييمك",
 
+      "notifications":"الإشعارات"
 
     },
   };
