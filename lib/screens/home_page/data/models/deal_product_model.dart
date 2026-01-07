@@ -56,7 +56,7 @@ class DealProductModel {
     required this.updatedAt,
     required this.isFavorite,
     required this.product,
-    required this.rating,
+    // required this.rating,
   });
 
   factory DealProductModel.fromJson(Map<String, dynamic> json) => DealProductModel(
@@ -82,7 +82,7 @@ class DealProductModel {
     updatedAt: DateTime.parse(json["updated_at"]),
     isFavorite: json["is_favorite"],
     product: PModel.fromJson(json["product"]),
-    rating: json["rating"],
+    // rating: json["rating"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -127,6 +127,7 @@ class PModel {
   DateTime createdAt;
   DateTime updatedAt;
   List<ProductPicture> productPictures;
+  List<Rates> rates;
 
   PModel({
     required this.id,
@@ -144,6 +145,7 @@ class PModel {
     required this.createdAt,
     required this.updatedAt,
     required this.productPictures,
+    required this.rates,
   });
 
   factory PModel.fromJson(Map<String, dynamic> json) => PModel(
@@ -162,6 +164,7 @@ class PModel {
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     productPictures: List<ProductPicture>.from(json["product_pictures"].map((x) => ProductPicture.fromJson(x))),
+    rates: List<Rates>.from(json["rates"].map((x) => Rates.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -180,6 +183,7 @@ class PModel {
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "product_pictures": List<dynamic>.from(productPictures.map((x) => x.toJson())),
+    "rates": List<dynamic>.from(rates.map((x) => x.toJson())),
   };
 }
 
@@ -212,5 +216,45 @@ class ProductPicture {
     "picture": picture,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
+  };
+}
+
+class Rates {
+  int? id;
+  int? productId;
+  int? userId;
+  int? rate;
+  String? comment;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+
+  Rates({
+    this.id,
+    this.productId,
+    this.userId,
+    this.rate,
+    this.comment,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory Rates.fromJson(Map<String, dynamic> json) => Rates(
+    id: json["id"],
+    productId: json["product_id"],
+    userId: json["user_id"],
+    rate: json["rate"],
+    comment: json["comment"],
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "product_id": productId,
+    "user_id": userId,
+    "rate": rate,
+    "comment": comment,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
   };
 }

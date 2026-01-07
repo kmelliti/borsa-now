@@ -44,7 +44,7 @@ class _MyOrdersState extends State<MyOrders> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar2(context, false),
+      appBar: buildAppBar(context, false),
       body: Container(
         padding: EdgeInsets.all(20),
         child: SingleChildScrollView(

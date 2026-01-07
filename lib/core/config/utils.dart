@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:borsa_now_bis/core/routes/app_routes.dart';
 import 'package:borsa_now_bis/core/services/auth_services.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
+import 'package:borsa_now_bis/screens/notifications_page/presentation/pages/notifications_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -371,8 +372,7 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
                       tag: "a2",
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREO17hg6KvLlweeZWN0LCEdi-OXM9qGpbQ9w&s",
-
+                          "$baseUrlImage/${appServices.getUser().picture}",
                         ),
                       ),
                     ),
@@ -524,7 +524,10 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+
+                        Get.to(NotificationsPage());
+                      },
                       borderRadius: BorderRadius.circular(30),
                       child: AnimatedContainer(
                         duration: Duration(milliseconds: 300),
@@ -562,17 +565,12 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
   );
 }
 
-AppBar buildAppBar2(BuildContext context, [bool? autoBack = false,Function(String value)? onSearchSubmitted, List? actions]) {
-  final ValueNotifier<double> widthSearchBox = ValueNotifier(57);
-  TextEditingController searchController = TextEditingController();
-  final HomePageController _homePageController = getIt();
+AppBar buildAppBar2() {
   return AppBar(
     backgroundColor: HexColor.fromHex(AppTheme.appBackGroundColor),
     elevation: 0,
-    leadingWidth: 120,
-    leading:
-    autoBack ?? false
-        ? TweenAnimationBuilder<double>(
+    leadingWidth: 80,
+    leading: TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 800),
       curve: Curves.easeOutBack,
@@ -602,33 +600,11 @@ AppBar buildAppBar2(BuildContext context, [bool? autoBack = false,Function(Strin
           ),
         );
       },
-    )
-        : TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: Duration(milliseconds: 800),
-      curve: Curves.easeOutBack,
-      builder: (context, value, child) {
-        return Opacity(
-          opacity: value.clamp(0.0, 1.0),
-          child: Transform.scale(
-            scale: 0.5 + (value * 0.5),
-            child: Hero(
-              tag: "a2",
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREO17hg6KvLlweeZWN0LCEdi-OXM9qGpbQ9w&s",
-
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     ),
     actions: [
       TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: 1.0),
-        duration: Duration(milliseconds: 300),
+        duration: Duration(milliseconds: 600),
         curve: Curves.easeOutBack,
         builder: (context, value, child) {
           return Transform.translate(
@@ -637,187 +613,73 @@ AppBar buildAppBar2(BuildContext context, [bool? autoBack = false,Function(Strin
               opacity: value.clamp(0.0, 1.0),
               child: Material(
                 color: Colors.transparent,
-                child: ValueListenableBuilder(
-                  valueListenable: widthSearchBox,
-                  builder: (context, size, _) {
-                    return AnimatedContainer(
-                      width: size,
-                      height: 50,
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        //  shape:size == 200 ? BoxShape.rectangle : BoxShape.circle,
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                          color: HexColor.fromHex(AppTheme.borderGrey),
+                child: InkWell(
+                  onTap: () {},
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: HexColor.fromHex(AppTheme.borderGrey),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 5,
+                          offset: Offset(0, 2),
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 5,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      duration: Duration(milliseconds: 300),
-                      child: Row(
-                        mainAxisAlignment:
-                        size == 250
-                            ? MainAxisAlignment.end
-                            : MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (size == 250)
-                            Expanded(
-                              child: Center(
-                                child: TextFormField(
-                                  controller: searchController,
-                                  onTapOutside: (p) {
-                                    FocusScope.of(context).unfocus();
-                                  },
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: 6.9,
-                                    ),
-                                    border: InputBorder.none,
-
-                                    prefixIcon: InkWell(
-                                      onTap: () {
-                                        print("indexWidget.value1 : ${indexWidget.value}");
-                                        searchController.text = "";
-
-                                        widthSearchBox.value = 55;
-                                      },
-                                      child:
-                                      size == 250
-                                          ? Container(
-                                        padding: EdgeInsets.all(1),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: HexColor.fromHex(
-                                              AppTheme.primaryColor,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Icons.close,
-                                          size: 12,
-                                          color: HexColor.fromHex(
-                                            AppTheme.borderGrey,
-                                          ),
-                                        ),
-                                      )
-                                          : null,
-                                    ),
-                                    focusedBorder: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    errorBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-
-                                    hintText: "search".tr,
-                                    hintStyle: Theme.of(
-                                      context,
-                                    ).textTheme.bodyLarge?.copyWith(
-                                      color: HexColor.fromHex(
-                                        AppTheme.borderGrey,
-                                      ),
-                                    ),
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                            ),
-                          InkWell(
-                            onTap: () {
-
-                              print("indexWidget.value : ${indexWidget.value}");
-                              if(indexWidget.value != 0){
-                                return;
-                              }
-                              if (size == 250) {
-                                if (searchController.text.isEmpty) {
-                                  return;
-                                }
-                                onSearchSubmitted?.call(searchController.text);
-                              } else {
-                                widthSearchBox.value = 250;
-                              }
-                            },
-                            child: SvgPicture.asset("assets/icons/search.svg"),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                      ],
+                    ),
+                    child: SvgPicture.asset("assets/icons/search.svg"),
+                  ),
                 ),
               ),
             ),
           );
         },
       ),
-      ValueListenableBuilder(
-        valueListenable: widthSearchBox,
-        builder: (context, size, _) {
-          return TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: Duration(milliseconds: 800),
-            curve: Curves.easeOutBack,
-            builder: (context, value, child) {
-              return Transform.translate(
-                offset: Offset(0, (1 - value) * 20),
-                child: Opacity(
-                  opacity: value.clamp(0.0, 1.0),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: ValueListenableBuilder(
-                      valueListenable: _homePageController.cartProducts,
-                      builder: (context,val,_) {
-                        return InkWell(
-                          onTap: () {
-                            Get.toNamed(AppRoutes.cart);
-                          },
-                          borderRadius: BorderRadius.circular(30),
-                          child: Stack(
-                            children: [
-                              AnimatedContainer(
-                                duration: Duration(milliseconds: 300),
-                                width: size == 250 ? 0 : 55,
-                                height: size == 250 ? 0 : 55,
-                                padding: EdgeInsets.all(15),
-                                margin: EdgeInsets.symmetric(horizontal: 15),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: HexColor.fromHex(AppTheme.borderGrey),
-                                  ),
-
-                                ),
-                                child: SvgPicture.asset(
-                                  "assets/icons/cart.svg",
-                                ),
-                              ),
-                              Positioned(
-
-                                  right: 10,
-                                  top:0,
-                                  child: Container(
-                                    padding: EdgeInsets.all(6),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: HexColor.fromHex(AppTheme.primaryColor)
-                                      ),
-                                      child: Text("${val.length}",style: TextStyle(color: Colors.white),)))
-                            ],
-                          ),
-                        );
-                      }
+      TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: Duration(milliseconds: 800),
+        curve: Curves.easeOutBack,
+        builder: (context, value, child) {
+          return Transform.translate(
+            offset: Offset(0, (1 - value) * 20),
+            child: Opacity(
+              opacity: value.clamp(0.0, 1.0),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {},
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    padding: EdgeInsets.all(15),
+                    margin: EdgeInsets.symmetric(horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: HexColor.fromHex(AppTheme.borderGrey),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 5,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
+                    child: SvgPicture.asset("assets/icons/notifications.svg"),
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           );
         },
       ),

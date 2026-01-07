@@ -13,6 +13,7 @@ String lookUpModelToJson(List<LookUpModel> data) => json.encode(List<dynamic>.fr
 class LookUpModel extends Equatable{
   final int id;
   final String name;
+  bool selected = false;
 
   LookUpModel({
     required this.id,

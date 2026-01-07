@@ -55,7 +55,6 @@ class AppServices {
       throw Exception('Failed to load Banks: $e ,$s');
     }
   }
-
   Future<List<LookUpModel>> getProductCategories() async {
 
     try {
@@ -68,11 +67,11 @@ class AppServices {
         return lookUpModelFromJson(jsonEncode(response.data['data']));
 
       }
-      throw Exception('Failed to load Banks');
+      throw Exception('Failed to load categories');
     } catch (e,s) {
       log("$e $s");
 
-      throw Exception('Failed to load Banks: $e ,$s');
+      throw Exception('Failed to load categories: $e ,$s');
     }
   }
 

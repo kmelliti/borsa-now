@@ -1,4 +1,5 @@
 import 'package:borsa_now_bis/core/config/bottom_navigator.dart';
+import 'package:borsa_now_bis/screens/contact_page/presentation/pages/contact_page.dart';
 import 'package:borsa_now_bis/screens/favourite/pages/favourite_page.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/pages/home_page.dart';
 import 'package:borsa_now_bis/screens/my_orders/pages/my_orders.dart';
@@ -42,7 +43,7 @@ class MainScreen extends StatelessWidget {
             case 3:
               return MyFavourites();
             case 4:
-              return MyAccount();
+              return ContactPage();
 
             default:
               return HomePage();
