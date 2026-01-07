@@ -94,7 +94,7 @@ class AuthService{
   Future<void> signOut() async {
     try {
       final response = await _dio.get(
-        'BorsaNow/public/api/v1/investor/logout/${getLang()}',
+        'BorsaNow/public/api/v1/customer/logout/${getLang()}',
       );
       print("Data ${response.data} ");
       if(response.data["result"] == false){

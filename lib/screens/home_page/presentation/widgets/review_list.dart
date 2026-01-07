@@ -5,13 +5,14 @@ import 'package:borsa_now_bis/core/config/utils.dart';
 import 'package:borsa_now_bis/core/di/di.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/review_response_model.dart';
-import 'package:borsa_now_bis/screens/home_page/presentation/widgets/rate_product_widget.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/config/time_ago.dart';
+import '../../../my_orders/widgets/rate_product_widget.dart';
 import '../manager/home_page_controller.dart';
 
 class ReviewList extends StatefulWidget {

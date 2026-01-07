@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import '../../../core/config/app_constants.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../home_page/data/models/review_response_model.dart';
+import '../widgets/rate_product_widget.dart';
 
 class OrderDetails extends StatelessWidget {
   const OrderDetails({super.key});
@@ -209,7 +211,20 @@ class OrderDetails extends StatelessWidget {
                 children: [
                   Expanded(child: ElevatedButton(onPressed: (){}, child: Text("reorder".tr))),
                   SizedBox(width: 10,),
-                  Expanded(child: ElevatedButton(onPressed: (){}, child: Text("leave_comment".tr),style: AppTheme.outlinedButtonStyle,))
+                  Expanded(child: ElevatedButton(onPressed: ()async{
+                    ReviewModel? review = await  showModalBottomSheet(context: context,
+                        isScrollControlled: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                        ),
+                        builder: (c){
+
+                          return RateProductWidget(productId: "",);
+                        });
+                  }, child: Text("leave_comment".tr),style: AppTheme.outlinedButtonStyle,))
                 ],
               ),
               SizedBox(height: 20,),
