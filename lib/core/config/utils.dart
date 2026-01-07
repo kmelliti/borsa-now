@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:borsa_now_bis/core/routes/app_routes.dart';
 import 'package:borsa_now_bis/core/services/auth_services.dart';
+import 'package:borsa_now_bis/screens/cart/pages/cart_page.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
 import 'package:borsa_now_bis/screens/notifications_page/presentation/pages/notifications_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -322,6 +323,7 @@ void showLogoutAlert(BuildContext context) {
 AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String value)? onSearchSubmitted]) {
   final ValueNotifier<double> widthSearchBox = ValueNotifier(57);
   TextEditingController searchController = TextEditingController();
+  final HomePageController _homePageController = getIt();
   return AppBar(
     backgroundColor: HexColor.fromHex(AppTheme.appBackGroundColor),
     elevation: 0,
@@ -510,56 +512,74 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
         },
       ),
       ValueListenableBuilder(
-        valueListenable: widthSearchBox,
-        builder: (context, size, _) {
-          return TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: Duration(milliseconds: 800),
-            curve: Curves.easeOutBack,
-            builder: (context, value, child) {
-              return Transform.translate(
-                offset: Offset(0, (1 - value) * 20),
-                child: Opacity(
-                  opacity: value.clamp(0.0, 1.0),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
+        valueListenable: _homePageController.cartProducts,
+        builder: (context,p,_) {
+          return ValueListenableBuilder(
+            valueListenable: widthSearchBox,
+            builder: (context, size, _) {
+              return TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: Duration(milliseconds: 800),
+                curve: Curves.easeOutBack,
+                builder: (context, value, child) {
+                  return Transform.translate(
+                    offset: Offset(0, (1 - value) * 20),
+                    child: Opacity(
+                      opacity: value.clamp(0.0, 1.0),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
 
-                        Get.to(NotificationsPage());
-                      },
-                      borderRadius: BorderRadius.circular(30),
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        width: size == 250 ? 0 : 55,
-                        height: size == 250 ? 0 : 55,
-                        padding: EdgeInsets.all(15),
-                        margin: EdgeInsets.symmetric(horizontal: 15),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: HexColor.fromHex(AppTheme.borderGrey),
+                            Get.to(CartPage());
+                          },
+                          borderRadius: BorderRadius.circular(30),
+                          child: Stack(
+                            children: [
+                              AnimatedContainer(
+                                duration: Duration(milliseconds: 300),
+                                width: size == 250 ? 0 : 55,
+                                height: size == 250 ? 0 : 55,
+                                padding: EdgeInsets.all(15),
+                                margin: EdgeInsets.symmetric(horizontal: 15),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: HexColor.fromHex(AppTheme.borderGrey),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 5,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: SvgPicture.asset(
+                                  "assets/icons/cart.svg",
+                                ),
+                              ),
+                              Positioned(
+                                  right: 10,
+                                  child: Container(
+                                      padding: EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: HexColor.fromHex(AppTheme.primaryColor)
+                                      ),
+                                      child: Text("${p.length}",style: TextStyle(color: Colors.white),)))
+                            ],
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 5,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: SvgPicture.asset(
-                          "assets/icons/notifications.svg",
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
           );
-        },
+        }
       ),
     ],
   );

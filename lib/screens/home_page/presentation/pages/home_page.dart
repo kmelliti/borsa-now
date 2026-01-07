@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
-                    childAspectRatio: .56,
+                    childAspectRatio: .46,
                   ),
 
                   // Build your grid tiles
