@@ -15,7 +15,8 @@ final AppServices appServices = getIt();
 class HomePageController {
 
   final HomePageService _homePageService;
-  ValueNotifier<List<p.ProductModel>> cartProducts = ValueNotifier([]);
+  // ValueNotifier<List<p.ProductModel>> cartProducts = ValueNotifier([]);
+  ValueNotifier<List<DealProductModel>> cartProducts = ValueNotifier([]);
   
   
 
@@ -48,20 +49,37 @@ class HomePageController {
   Future<ReviewResponseModel> getReviews(String productId) async {
     return await _homePageService.getReviews(productId);
   }
+
   Future<ReviewModel> addReview (List<String?> images , Map<String,dynamic> params) async {
     return await _homePageService.addReview(images, params);
   }
+
   Future<void> addDeleteFav ( Map<String,dynamic> params) async {
     return await _homePageService.addDeleteFav( params);
   }
   
-  void addCartProducts(p.ProductModel product) {
-    List<p.ProductModel> products = cartProducts.value;
-    products.add(product);
+  void addCartProduct(DealProductModel product) async {
+
+
+    List<DealProductModel> products = cartProducts.value;
+
+    bool found = false;
+
+    for (int i = 0; i < products.length; i++) {
+      if (products[i].id == product.id) {
+        products[i].cartQuantity++;
+        found = true;
+        break;
+      }
+    };
+
+    if (!found)
+      products.add(product);
+
     cartProducts.value = [...products];
   }
-  void removeCartProducts(p.ProductModel product) {
-    List<p.ProductModel> products = cartProducts.value;
+  void removeCartProducts(DealProductModel product) {
+    List<DealProductModel> products = cartProducts.value;
     products.remove(product);
     cartProducts.value = [...products];
   }

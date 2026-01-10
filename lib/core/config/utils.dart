@@ -135,7 +135,12 @@ Widget getPriceInText(double price, [TextStyle? style, double? pictureWidth]) {
             ),
       ),
       SizedBox(width: 5),
-      SvgPicture.asset("assets/icons/sar.svg", width: pictureWidth ?? 20),
+      SvgPicture.asset("assets/icons/sar.svg", width: pictureWidth ?? 20,
+          colorFilter: ColorFilter.mode(
+            style != null ? style.color! : HexColor.fromHex(AppTheme.primaryColor), // The color you want to apply
+            BlendMode.srcIn, // The blend mode to use
+          )
+      ),
     ],
   );
 }
