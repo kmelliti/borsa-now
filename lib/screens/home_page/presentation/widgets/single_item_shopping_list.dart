@@ -46,7 +46,7 @@ class SingleItemShoppingList extends StatelessWidget {
                 SizedBox(height: 10),
                 Row(
                   children: [
-                    getPriceInText(double.parse(dealProductModel.wholesalePrice)),
+                    getPriceInText(double.parse(dealProductModel.retailPrice)),
                     SizedBox(width: 10),
                     getDiscountedPriceInText(double.parse(dealProductModel.retailPrice)),
                   ],
@@ -63,13 +63,13 @@ class SingleItemShoppingList extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Text(
-                      dealProductModel.quantity.toString(),
-                      style: TextStyle(
-                        color: HexColor.fromHex("#5E5D68"),
-                        fontSize: 16,
-                      ),
-                    ),
+                    // Text(
+                    //   dealProductModel.quantity.toString(),
+                    //   style: TextStyle(
+                    //     color: HexColor.fromHex("#5E5D68"),
+                    //     fontSize: 16,
+                    //   ),
+                    // ),
                   ],
                 ),
                 SizedBox(height: 10),
@@ -86,13 +86,13 @@ class SingleItemShoppingList extends StatelessWidget {
                     ),
                     SizedBox(width: 10),
 
-                    Text(
-                      dealProductModel.minInvestment.toString(),
-                      style: TextStyle(
-                        color: HexColor.fromHex("#5E5D68"),
-                        fontSize: 16,
-                      ),
-                    ),
+                    // Text(
+                    //   dealProductModel.minInvestment.toString(),
+                    //   style: TextStyle(
+                    //     color: HexColor.fromHex("#5E5D68"),
+                    //     fontSize: 16,
+                    //   ),
+                    // ),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -166,7 +166,7 @@ class SingleItemShoppingList extends StatelessWidget {
               ),
 
               child: Text(
-                "${getPercentage(double.parse(dealProductModel.retailPrice), double.parse(dealProductModel.wholesalePrice)).toString()}% ",
+                "${getPercentage(double.parse(dealProductModel.retailPrice), double.parse(dealProductModel.retailPrice)).toString()}% ",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,

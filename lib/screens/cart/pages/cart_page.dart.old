@@ -1,0 +1,226 @@
+import 'package:borsa_now_bis/core/config/app_constants.dart';
+import 'package:borsa_now_bis/core/config/utils.dart';
+import 'package:borsa_now_bis/core/di/di.dart';
+import 'package:borsa_now_bis/screens/home_page/data/models/deal_product_model.dart';
+import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../core/theme/app_theme.dart';
+
+
+class CartPage extends StatelessWidget {
+   CartPage({super.key});
+  final HomePageController _controller = getIt();
+
+
+
+
+   // final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+   // // List<String> _data = ['Item 1', 'Item 2', 'Item 3'];
+   //
+   // void _removeItem(int index) {
+   //   // 2. Remove from the actual data list first
+   //   DealProductModel removedItem = _controller.cartProducts.value.removeAt(index);
+   //
+   //   // 3. Notify AnimatedList to start the removal animation
+   //   _listKey.currentState?.removeItem(
+   //     index, (context, animation) => _buildItem(removedItem, animation),
+   //     duration: const Duration(milliseconds: 300),
+   //   );
+   // }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+      appBar: buildAppBar(context,true),
+      body: Container(
+        padding: EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildTitle("my_orders".tr),
+              SizedBox(height: 20,),
+              ValueListenableBuilder(
+                valueListenable: _controller.cartProducts,
+                builder: (context,list,_) {
+
+                  return ListView.builder(
+                      itemCount: list.length,
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (c,i){
+
+          
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 5),
+                          child: Card(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide(color: HexColor.fromHex(AppTheme.stroke))
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        // padding: EdgeInsets.all(10),
+                                        width: 92,
+                                        height: 92,
+
+                                        decoration: BoxDecoration(
+                                          color: HexColor.fromHex(AppTheme.filledBox),
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                        child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(14),
+                                            child: Image.network("${baseUrlImage}${list[i].product.productPictures.first.picture}",fit: BoxFit.fill,)
+                                        ),
+
+                                        // Image.network("${baseUrlImage}${list[i].product.productPictures.first.picture}", fit: BoxFit.cover),
+                                      ),
+                                      SizedBox(width: 10,),
+                                      Expanded(
+                                        // flex: 4,
+                                        child: Container(
+                                          height: 90,
+
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Text(list[i].product.name),
+
+                                              Text(list[i].product.description ,maxLines: 1,),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          list.removeAt(i);
+                                          _controller.cartProducts.value = [...list];
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(7),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(color: HexColor.fromHex(AppTheme.stroke))
+                                          ),
+                                          child: Icon(Icons.delete_outline_outlined,color: Colors.red,),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      getPriceInText( double.tryParse(list[i].retailPrice) as double, Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: HexColor.fromHex(AppTheme.primaryColor),
+                                        fontSize: 16
+                                      ),12),
+                                      Spacer(),
+                                      InkWell(
+                                        onTap: () {
+
+                                          list[i].cartQuantity++;
+                                          _controller.cartProducts.value = [...list];
+
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(7),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(color: HexColor.fromHex(AppTheme.stroke))
+                                          ),
+                                          child: Icon(Icons.add,color: HexColor.fromHex(AppTheme.primaryColor),),
+                                        ),
+                                      ),
+                                      SizedBox(width: 10,),
+                                      Text(list[i].cartQuantity.toString()),
+                                      SizedBox(width: 10,),
+                                      InkWell(
+                                        onTap: () {
+
+                                          list[i].cartQuantity--;
+                                          _controller.cartProducts.value = [...list];
+
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(7),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(color: HexColor.fromHex(AppTheme.stroke))
+                                          ),
+                                          child: Icon(Icons.remove,color: HexColor.fromHex(AppTheme.primaryColor),),
+                                        ),
+                                      )
+
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                  });
+                }
+              )
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: _controller.cartProducts.value.length > 0 ?
+      InkWell(
+        onTap: () {
+          print("payment");
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Container(
+            height: 52,
+            decoration: BoxDecoration(
+              color: HexColor.fromHex(AppTheme.primaryColor),
+              borderRadius: BorderRadius.circular(26),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal:  30.0),
+              child: Row(
+                children: [
+                  Expanded(child: Text("complete_payment".tr, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                      fontSize: 16
+                  ),)),
+                  Builder(
+                      builder: (context) {
+                        double total = 0;
+                        _controller.cartProducts.value.forEach((DealProductModel item) {
+                          total += double.tryParse(item.retailPrice) as double;
+                        });
+                        // return Text(total.toString());
+                        return getPriceInText( total, Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white,
+                            fontSize: 16
+                        ),12);
+                      }
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ) : Container(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+}

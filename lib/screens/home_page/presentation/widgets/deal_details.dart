@@ -37,7 +37,8 @@ class _DealDetailsState extends State<DealDetails> {
    @override
   void initState() {
    dealModel = widget.dealModel;
-   isFavorite.value = dealModel.isFavorite;
+   isFavorite.value = dealModel.isFavorite
+   ;
     super.initState();
   }
   @override
@@ -51,7 +52,7 @@ class _DealDetailsState extends State<DealDetails> {
         child: Column(
           children: [
             ElevatedButton(onPressed: (){
-              _homePageController.addCartProducts(mockProductModel());
+              _homePageController.addCartProduct(widget.dealModel);
             }, child: Text("add_to_cart".tr),style: AppTheme.outlinedButtonStyle,),
 
             SizedBox(height: 10,),
@@ -66,147 +67,7 @@ class _DealDetailsState extends State<DealDetails> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Stack(
-            //   children: [
-            //     SizedBox(
-            //       height: 400,
-            //       child: PageView(
-            //         onPageChanged: (int currentIndex) {
-            //           sliderIndex.value = currentIndex;
-            //         },
-            //         children:
-            //             widget.dealModel.product.productPictures.map((im) {
-            //               return ImageColorBuilder(
-            //                 url: "${baseUrlImage}/${im.picture}",
-            //                 fit: BoxFit.cover,
-            //                 builder:
-            //                     (
-            //                       BuildContext context,
-            //                       Image? image,
-            //                       Color? imageColor,
-            //                     ) {
-            //                       return Container(
-            //
-            //                         // padding: EdgeInsets.symmetric(vertical: 20),
-            //                         decoration: BoxDecoration(
-            //                           color: imageColor,
-            //                         ),
-            //                         child: image,
-            //                       );
-            //                     },
-            //               );
-            //
-            //             }).toList(),
-            //       ),
-            //     ),
-            //
-            //     Positioned(
-            //       top: 60,
-            //       right: 20,
-            //       left: 20,
-            //       child: Row(
-            //         children: [
-            //           InkWell(
-            //             onTap: () {
-            //               Get.back();
-            //             },
-            //             child: Container(
-            //               padding: EdgeInsets.all(10),
-            //               margin: EdgeInsets.symmetric(horizontal: 5),
-            //               decoration: BoxDecoration(
-            //                 color: Colors.white,
-            //                 shape: BoxShape.circle,
-            //
-            //                 border: Border.all(
-            //                   color: HexColor.fromHex(AppTheme.borderGrey),
-            //                 ),
-            //               ),
-            //               child: Icon(Icons.arrow_back),
-            //             ),
-            //           ),
-            //           Spacer(),
-            //           Container(
-            //             width: 50,
-            //             height: 50,
-            //             padding: EdgeInsets.all(15),
-            //             margin: EdgeInsets.symmetric(horizontal: 10),
-            //             decoration: BoxDecoration(
-            //               color: Colors.white,
-            //               shape: BoxShape.circle,
-            //
-            //               border: Border.all(
-            //                 color: HexColor.fromHex(AppTheme.borderGrey),
-            //               ),
-            //             ),
-            //             child: SvgPicture.asset("assets/icons/share.svg"),
-            //           ),
-            //           InkWell(
-            //             onTap: () async{
-            //               isFavorite.value = !isFavorite.value;
-            //               _homePageController.addDeleteFav({
-            //                 "wholesale_offer_id":widget.dealModel.id,
-            //               });
-            //
-            //             },
-            //             child: Container(
-            //               width: 50,
-            //               height: 50,
-            //
-            //               decoration: BoxDecoration(
-            //                 color: Colors.white,
-            //                 shape: BoxShape.circle,
-            //                 border: Border.all(
-            //                   color: HexColor.fromHex(AppTheme.borderGrey),
-            //                 ),
-            //               ),
-            //               child: ValueListenableBuilder(
-            //                 valueListenable: isFavorite,
-            //                 builder: (context,fav,_) {
-            //                   return Center(child: Icon(fav ? Icons.favorite :Icons.favorite_border,color: HexColor.fromHex(AppTheme.primaryColor),));
-            //                 }
-            //               ),
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //     Positioned(
-            //       bottom: 20,
-            //       left: 0,
-            //       right: 0,
-            //       child: ValueListenableBuilder(
-            //         valueListenable: sliderIndex,
-            //         builder: (context, index, _) {
-            //           return Row(
-            //             mainAxisAlignment: MainAxisAlignment.center,
-            //             children:
-            //                 widget.dealModel.product.productPictures.map((im) {
-            //                   return Container(
-            //                     width: 10,
-            //                     height: 10,
-            //                     margin: EdgeInsets.symmetric(horizontal: 3),
-            //                     decoration: BoxDecoration(
-            //                       color:
-            //                           widget.dealModel
-            //                                       .product
-            //                                       .productPictures[index] ==
-            //                                   im
-            //                               ? HexColor.fromHex(
-            //                                 AppTheme.primaryColor,
-            //                               )
-            //                               : HexColor.fromHex(
-            //                                 AppTheme.secondaryColor,
-            //                               ),
-            //                       shape: BoxShape.circle,
-            //                     ),
-            //                   );
-            //                 }).toList(),
-            //           );
-            //         },
-            //       ),
-            //     ),
-            //   ],
-            // ),
+
             Container(
               margin: EdgeInsets.all(20),
               child: Column(
@@ -226,7 +87,7 @@ class _DealDetailsState extends State<DealDetails> {
                   Row(
                     children: [
                       getPriceInText(
-                        double.parse(widget.dealModel.wholesalePrice),
+                        double.parse(widget.dealModel.retailPrice),
                       ),
                       SizedBox(width: 10),
                       getDiscountedPriceInText(
@@ -245,7 +106,7 @@ class _DealDetailsState extends State<DealDetails> {
                         ),
 
                         child: Text(
-                          "${getPercentage(double.parse(widget.dealModel.retailPrice), double.parse(widget.dealModel.wholesalePrice)).ceil().toString()} %",
+                          "${getPercentage(double.parse(widget.dealModel.retailPrice), double.parse(widget.dealModel.retailPrice)).ceil().toString()} %",
                           style: Theme.of(
                             context,
                           ).textTheme.bodyMedium?.copyWith(
@@ -302,18 +163,18 @@ class _DealDetailsState extends State<DealDetails> {
                               ),
                               SizedBox(height: 10),
 
-                              Text(
-                                widget.dealModel.minInvestment.toString(),
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium?.copyWith(
-                                  color: HexColor.fromHex(
-                                    AppTheme.primaryColor,
-                                  ),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
+                              // Text(
+                              //   widget.dealModel.minInvestment.toString(),
+                              //   style: Theme.of(
+                              //     context,
+                              //   ).textTheme.bodyMedium?.copyWith(
+                              //     color: HexColor.fromHex(
+                              //       AppTheme.primaryColor,
+                              //     ),
+                              //     fontWeight: FontWeight.bold,
+                              //     fontSize: 16,
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
@@ -346,18 +207,18 @@ class _DealDetailsState extends State<DealDetails> {
                                 ),
                               ),
                               SizedBox(height: 10),
-                              Text(
-                                "${widget.dealModel.quantity-widget.dealModel.quantitySold}",
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium?.copyWith(
-                                  color: HexColor.fromHex(
-                                    AppTheme.primaryColor,
-                                  ),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
+                              // Text(
+                              //   "${widget.dealModel.quantity-widget.dealModel.quantitySold}",
+                              //   style: Theme.of(
+                              //     context,
+                              //   ).textTheme.bodyMedium?.copyWith(
+                              //     color: HexColor.fromHex(
+                              //       AppTheme.primaryColor,
+                              //     ),
+                              //     fontWeight: FontWeight.bold,
+                              //     fontSize: 16,
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),

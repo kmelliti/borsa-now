@@ -33,8 +33,10 @@ class HomePageService {
 
       log("params : ${params}");
 
-      final response = await _dio.get("/BorsaNow/public/api/v1/investor/deals/${getLang()}?page=${page}${params}"/*,queryParameters: value*/);
+      // final response = await _dio.get("/BorsaNow/public/api/v1/investor/deals/${getLang()}?page=${page}${params}"/*,queryParameters: value*/);
+      final response = await _dio.get("/BorsaNow/public/api/v1/customer/retails/${getLang()}?page=${page}${params}"/*,queryParameters: value*/);
 
+      print("responseresponse : ${response.data['data']['data']}");
 
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
@@ -57,7 +59,9 @@ class HomePageService {
 
   Future<List<DealProductModel>> getRelatedDeals(int dealId) async {
     try {
-      final response = await _dio.get("/BorsaNow/public/api/v1/investor/deals/${getLang()}?id=$dealId");
+      // final response = await _dio.get("/BorsaNow/public/api/v1/investor/deals/${getLang()}?id=$dealId");
+      final response = await _dio.get("/BorsaNow/public/api/v1/customer/retail/related/$dealId/${getLang()}");
+
       return (response.data['data']['data'] as List).map((e) => DealProductModel.fromJson(e)).toList();
     } catch (e, s) {
       log("$e $s");
@@ -121,6 +125,35 @@ class HomePageService {
       throw e;
     }
   }
+
+  Future<bool> addCartProduct(int productId) async {
+    try {
+
+      final response = await _dio.post("/BorsaNow/public/api/v1/customer/order/add/${getLang()}",data: {
+        "items": [
+          {
+            "retail_listing_id": productId,
+            "quantity": 1
+          }
+        ],
+        "discount_code": "",
+        "payment_method": "cod"
+      });
+
+
+      if (response.data["result"] == false) {
+        throw ApiException(response.data["message"]);
+      }
+
+      log("ezuyryeuzioaryueziy:  ${response.data}");
+      return true;
+
+    } catch (e, s) {
+      log("$e $s");
+      throw e;
+    }
+  }
+
 
   Future<void> addDeleteFav ( Map<String,dynamic> params) async {
     try {
