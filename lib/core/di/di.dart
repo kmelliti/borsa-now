@@ -2,7 +2,9 @@ import 'package:borsa_now_bis/core/config/dio_inizializer.dart';
 import 'package:borsa_now_bis/core/services/auth_services.dart';
 import 'package:borsa_now_bis/core/services/home_page_service.dart';
 import 'package:borsa_now_bis/core/services/my_account_services.dart';
+import 'package:borsa_now_bis/core/services/my_orders_services.dart';
 import 'package:borsa_now_bis/screens/my_account/presentation/manager/my_account_controller.dart';
+import 'package:borsa_now_bis/screens/my_orders/my_orders_controller.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,5 +41,7 @@ Future<void> setup() async {
   getIt.registerLazySingleton(()=>MyAccountController(getIt()));
   getIt.registerLazySingleton(()=>MyFavouriteService(getIt()));
   getIt.registerLazySingleton(()=>FavouriteController(getIt()));
+  getIt.registerLazySingleton(()=>MyOrderServices(getIt()));
+  getIt.registerLazySingleton(()=>MyOrdersController(getIt()));
 
 }

@@ -20,6 +20,22 @@ import 'app_constants.dart';
 
 String displayStringForOption(LookUpModel lookup) => lookup.name;
 
+// List of months with translations
+final List<String> monthList = [
+  'january'.tr,
+  'february'.tr,
+  'march'.tr,
+  'april'.tr,
+  'may'.tr,
+  'june'.tr,
+  'july'.tr,
+  'august'.tr,
+  'september'.tr,
+  'october'.tr,
+  'november'.tr,
+  'december'.tr,
+];
+
 extension HexColor on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
   static Color fromHex(String hexString) {

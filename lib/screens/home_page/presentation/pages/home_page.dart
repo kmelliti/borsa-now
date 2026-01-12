@@ -55,7 +55,6 @@ class _HomePageState extends State<HomePage> {
   );
 
   @override
-
   Future<void> fetchPromos() async {
 
     promosLoading.value = true;
@@ -73,7 +72,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchBrands() async {
-
     brandsLoading.value = true;
     brands = await _homePageController.getBrands();
     print("brands: $brands");

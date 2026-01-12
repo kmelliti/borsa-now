@@ -1,8 +1,12 @@
+import 'package:borsa_now_bis/core/models/my_order_model.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
+import 'package:borsa_now_bis/screens/my_orders/my_orders_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../../core/config/utils.dart';
+import '../../../core/di/di.dart';
 import '../widgets/single_order.dart';
 
 class MyOrders extends StatefulWidget {
@@ -13,21 +17,13 @@ class MyOrders extends StatefulWidget {
 }
 
 class _MyOrdersState extends State<MyOrders> {
-  // List of months with translations
-  final List<String> monthList = [
-    'january'.tr,
-    'february'.tr,
-    'march'.tr,
-    'april'.tr,
-    'may'.tr,
-    'june'.tr,
-    'july'.tr,
-    'august'.tr,
-    'september'.tr,
-    'october'.tr,
-    'november'.tr,
-    'december'.tr,
-  ];
+  final MyOrdersController _controller = getIt();
+  String status = "all";
+  late final _pagingController = PagingController<int, MyOrderModel>(
+    getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
+    fetchPage: (pageKey) => _controller.getMyOrders(pageKey,status),
+  );
+
   String? _selectedMonth;
   int? _selectedYear;
   final int baseYear = 2025;
@@ -59,13 +55,19 @@ class _MyOrdersState extends State<MyOrders> {
               SizedBox(height: 20),
               filterRow(context),
               SizedBox(height: 20),
-              ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                  itemCount: 5,
-                  itemBuilder: (c,i){
-                    return SingleOrder();
-                  })
+              PagingListener(
+                controller: _pagingController,
+                builder: (context, state, fetchNextPage) => PagedListView<int, MyOrderModel>(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  state: state,
+                  fetchNextPage: fetchNextPage,
+                  builderDelegate: PagedChildBuilderDelegate(
+                    itemBuilder: (context, item, index) =>   SingleOrder(order: item),
+                  ),
+                ),
+              )
+
             ],
           ),
         ),
@@ -84,6 +86,8 @@ class _MyOrdersState extends State<MyOrders> {
               InkWell(
                 onTap: () {
                   filterIndex.value = 1;
+                  status = "all";
+                  _pagingController.refresh();
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 5),
@@ -117,6 +121,8 @@ class _MyOrdersState extends State<MyOrders> {
               InkWell(
                 onTap: () {
                   filterIndex.value = 2;
+                  status = "delivered";
+                  _pagingController.refresh();
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 5),
@@ -152,6 +158,8 @@ class _MyOrdersState extends State<MyOrders> {
               InkWell(
                 onTap: () {
                   filterIndex.value = 3;
+                  status = "canceled";
+                  _pagingController.refresh();
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 5),
@@ -187,6 +195,8 @@ class _MyOrdersState extends State<MyOrders> {
               InkWell(
                 onTap: () {
                   filterIndex.value = 4;
+                  status = "in review";
+                  _pagingController.refresh();
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 5),

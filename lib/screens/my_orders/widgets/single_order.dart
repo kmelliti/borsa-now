@@ -1,4 +1,5 @@
 import 'package:borsa_now_bis/core/config/app_constants.dart';
+import 'package:borsa_now_bis/core/models/my_order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,8 +8,9 @@ import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 
 class SingleOrder extends StatelessWidget {
-  const SingleOrder({super.key});
+  const SingleOrder({super.key, required this.order});
 
+  final MyOrderModel order;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -25,7 +27,7 @@ class SingleOrder extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "delivered".tr,
+                  order.status,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: Colors.green,
                     fontSize: 16,
@@ -33,7 +35,7 @@ class SingleOrder extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  df.format(DateTime.now()),
+                  df.format(order.createdAt),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: HexColor.fromHex(AppTheme.textDate),
                     fontSize: 14,
@@ -43,20 +45,20 @@ class SingleOrder extends StatelessWidget {
               ],
             ),
             SizedBox(height: 10,),
-            keyValueRow(context,"order_id".tr, "1947034"),
+            keyValueRow(context,"order_id".tr, order.id.toString()),
             SizedBox(height: 10,),
             keyValueRow(context,"track_id".tr, "IW3475453455"),
             SizedBox(height: 10,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                keyValueRow(context,"quantity".tr, "2454"),
-                keyValueRow(context,"total".tr, "2.236"),
+                keyValueRow(context,"quantity".tr, order.items.map((e)=>e.quantity).toString()),
+                keyValueRow(context,"total".tr, order.amountTotal),
               ],
             ),
             SizedBox(height: 20,),
             ElevatedButton(onPressed: (){
-              Get.toNamed(AppRoutes.orderDetails);
+              Get.toNamed(AppRoutes.orderDetails,arguments: order);
             }, child: Text("details".tr),style: AppTheme.outlinedButtonStyle,)
           ],
         ),
