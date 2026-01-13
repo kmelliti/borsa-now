@@ -74,7 +74,6 @@ class HomePageService {
     try {
 
       await Future.delayed(Duration(seconds: 3));
-
       return [
         {"title": "لا تفوت فرصة آيفون 17!", "save": "20%", "color": "#E5864C"},
         {"title": "أشهى مشروبات ستاربكس® بانتظارك!", "save": "20%", "color": "#0B6648"},
@@ -126,16 +125,21 @@ class HomePageService {
     }
   }
 
-  Future<bool> addCartProduct(int productId) async {
+  Future addCartProducts(List<DealProductModel> products) async {
+
+    List items = [];
+    products.forEach((elem) {
+      Map m = Map();
+      m["retail_listing_id"] = elem.id;
+      m["quantity"] = elem.cartQuantity;
+      items.add(m);
+    }
+    );
+
     try {
 
       final response = await _dio.post("/BorsaNow/public/api/v1/customer/order/add/${getLang()}",data: {
-        "items": [
-          {
-            "retail_listing_id": productId,
-            "quantity": 1
-          }
-        ],
+        "items": items,
         "discount_code": "",
         "payment_method": "cod"
       });

@@ -753,6 +753,7 @@ AppBar buildAppBar2() {
             scale: 0.5 + (value * 0.5),
             child: InkWell(
               onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
                 Get.back();
               },
               child: Container(

@@ -1,6 +1,7 @@
 import 'package:borsa_now_bis/core/config/app_constants.dart';
 import 'package:borsa_now_bis/core/config/utils.dart';
 import 'package:borsa_now_bis/core/di/di.dart';
+import 'package:borsa_now_bis/screens/cart/pages/cart_payment.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/deal_product_model.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
 import 'package:flutter/material.dart';
@@ -214,7 +215,8 @@ class _CartPageState extends State<CartPage> {
         offstage: _controller.cartProducts.value.length == 0,
         child: InkWell(
           onTap: () {
-            print("payment");
+
+            Get.to(CartPayment());
           },
           child: Padding(
             padding: const EdgeInsets.all(20.0),

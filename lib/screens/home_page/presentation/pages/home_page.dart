@@ -134,6 +134,16 @@ class _HomePageState extends State<HomePage> {
                   ValueListenableBuilder(
                       valueListenable: promosLoading,
                       builder: (context, isLoading, _) {
+
+                        return AnimatedSize(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          child: SizedBox(
+                            height: !isLoading && promos.length > 0 ? null : 0,//  isLoading ? 0 : null,
+                            child: PromosWidget(promos: promos,),
+                          ),
+                        );
+
                         return isLoading ?
                         // SizedBox(
                         //     height: 126,
@@ -141,7 +151,8 @@ class _HomePageState extends State<HomePage> {
                         //         child: CircularProgressIndicator()
                         //     )
                         // ) :
-                        ShimmerPromoWidget():
+                        // ShimmerPromoWidget():
+                        Container() :
                         PromosWidget(promos: promos,);
                       }
                   ),

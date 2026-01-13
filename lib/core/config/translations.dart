@@ -227,6 +227,11 @@ class AppTranslation extends Translations {
       "leave_comment":"اترك تقييمك",
 
       "notifications":"الإشعارات",
+
+      "object":"الموضوع",
+      "message":"الرسالة",
+      "send":"إرسال",
+      "payment":"الدفع"
       "pending": "قيد الانتظار",
       "paid": "مدفوع",
       "fulfilled": "تم التنفيذ",
