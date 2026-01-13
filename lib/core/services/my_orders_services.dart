@@ -57,4 +57,48 @@ class MyOrderServices {
       throw e;
     }
   }
+
+  Future<void> reOrder(int orderId) async {
+    AppServices _services = getIt();
+    try {
+      final response = await _dio.post(
+          "/BorsaNow/public/api/v1/customer/order/duplicate/${getLang()}",
+          data: {
+            "order_id":orderId
+          }
+      );
+
+      print("responseresponse : ${response.data}");
+
+      if (response.data["result"] == false) {
+        throw ApiException(response.data["message"]);
+      }
+   //   return OrderDetailModel.fromJson(response.data['data']);
+    } catch (e, s) {
+      log("$e $s");
+      throw e;
+    }
+  }
+  Future<Map> getDashboard(int month,int year) async {
+
+    try {
+      final response = await _dio.get(
+          "/BorsaNow/public/api/v1/customer/orders/dashboard/${getLang()}",
+          queryParameters: {
+            "month":month,
+            "year":year
+          }
+      );
+
+      print("responseresponse : ${response.data}");
+
+      if (response.data["result"] == false) {
+        throw ApiException(response.data["message"]);
+      }
+         return response.data['data'];
+    } catch (e, s) {
+      log("$e $s");
+      throw e;
+    }
+  }
 }

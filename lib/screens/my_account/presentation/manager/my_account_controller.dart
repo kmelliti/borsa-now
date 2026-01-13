@@ -21,4 +21,8 @@ class MyAccountController {
   Future<void> updatePassword(Map<String, dynamic> params) async {
     return _myAccountServices.updatePassword(params);
   }
+  Future<void> updatePersonalInformation(Map<String, dynamic> params) async {
+    return _myAccountServices.updatePersonalInformation( params);
+  }
+
 }

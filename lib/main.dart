@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'Borsa Now',
       translations: AppTranslation(),
-     locale: Locale('ar', 'SA'),
-     // locale: Locale('en'),
-      fallbackLocale: Locale('ar', 'SA'),
+     locale: Locale('ar',"SA"),
+
+      fallbackLocale: Locale('ar',"SA"),
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.splash,

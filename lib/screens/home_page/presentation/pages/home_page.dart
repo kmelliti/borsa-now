@@ -295,7 +295,7 @@ class _HomePageState extends State<HomePage> {
                         child: SingleItemShoppingGrid(dealProductModel: item, onFavouriteClicked: () {
 
                           _homePageController.addDeleteFav({
-                            "wholesale_offer_id":item.id,
+                            "retail_listing_id":item.id,
                           });
 
 

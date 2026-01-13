@@ -135,6 +135,119 @@ bool isValidSaudiPhone(String phone) {
   return phone.startsWith("05") && phone.length == 10;
 }
 
+Widget noItemFound(BuildContext c) {
+  return Center(child: Text("no_item_found".tr));
+}
+
+Widget dateSelector(
+  Function(String month) onMonthSelected,
+  Function(int year) onYearSelected,
+  List<int> listOfYears, [
+  bool isMonthSelectable = true,
+]) {
+  int _selectedMonth = DateTime.now().month;
+  int _selectedYear = DateTime.now().year;
+  final ValueNotifier<bool> shakeUp = ValueNotifier(false);
+
+  return ValueListenableBuilder(
+    valueListenable: shakeUp,
+    builder: (context, _, _) {
+      return Row(
+        children: [
+          isMonthSelectable
+              ? Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: HexColor.fromHex(AppTheme.borderGrey),
+                    ),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      value: _selectedMonth,
+                      isDense: false,
+
+                      itemHeight: 50,
+                      hint: Text("month".tr),
+                      icon: Icon(Icons.keyboard_arrow_down),
+
+                      onChanged: (int? newValue) {
+                        _selectedMonth = newValue ?? DateTime.now().month;
+
+                        shakeUp.value = !shakeUp.value;
+                        onMonthSelected(newValue.toString());
+                      },
+                      items:
+                          <int>[
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                          ].map<DropdownMenuItem<int>>((int value) {
+                            return DropdownMenuItem<int>(
+                              value: value,
+                              child: Text(monthList[value]),
+                            );
+                          }).toList(),
+                    ),
+                  ),
+                ),
+              )
+              : Container(),
+          isMonthSelectable ? SizedBox(width: 20) : Container(),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: HexColor.fromHex(AppTheme.borderGrey),
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<int>(
+                  isDense: false,
+
+                  value: _selectedYear,
+
+                  itemHeight: 50,
+                  hint: Text("year".tr),
+                  icon: Icon(Icons.keyboard_arrow_down),
+
+                  onChanged: (int? newValue) {
+                    _selectedYear = newValue!;
+                    print("Selected yeaaat = $newValue");
+
+                    shakeUp.value = !shakeUp.value;
+                    onYearSelected(_selectedYear);
+                  },
+                  items:
+                      listOfYears.map<DropdownMenuItem<int>>((int value) {
+                        return DropdownMenuItem<int>(
+                          value: value,
+                          child: Text(value.toString()),
+                        );
+                      }).toList(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 Widget getPriceInText(double price, [TextStyle? style, double? pictureWidth]) {
   bool isInt = price % 1 == 0;
   return Row(
@@ -151,11 +264,17 @@ Widget getPriceInText(double price, [TextStyle? style, double? pictureWidth]) {
             ),
       ),
       SizedBox(width: 5),
-      SvgPicture.asset("assets/icons/sar.svg", width: pictureWidth ?? 20,
-          colorFilter: ColorFilter.mode(
-            style != null ? style.color! : HexColor.fromHex(AppTheme.primaryColor), // The color you want to apply
-            BlendMode.srcIn, // The blend mode to use
-          )
+      SvgPicture.asset(
+        "assets/icons/sar.svg",
+        width: pictureWidth ?? 20,
+        colorFilter: ColorFilter.mode(
+          style != null
+              ? style.color!
+              : HexColor.fromHex(
+                AppTheme.primaryColor,
+              ), // The color you want to apply
+          BlendMode.srcIn, // The blend mode to use
+        ),
       ),
     ],
   );
@@ -262,7 +381,7 @@ TweenAnimationBuilder<double> buildTitle(String title) {
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
               fontSize: 24,
               fontWeight: FontWeight.w800,
-              color: HexColor.fromHex(AppTheme.primaryColor)
+              color: HexColor.fromHex(AppTheme.primaryColor),
             ),
           ),
         ),
@@ -341,7 +460,11 @@ void showLogoutAlert(BuildContext context) {
   );
 }
 
-AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String value)? onSearchSubmitted]) {
+AppBar buildAppBar(
+  BuildContext context, [
+  bool? autoBack = false,
+  Function(String value)? onSearchSubmitted,
+]) {
   final ValueNotifier<double> widthSearchBox = ValueNotifier(57);
   TextEditingController searchController = TextEditingController();
   final HomePageController _homePageController = getIt();
@@ -391,12 +514,9 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
                   opacity: value.clamp(0.0, 1.0),
                   child: Transform.scale(
                     scale: 0.5 + (value * 0.5),
-                    child: Hero(
-                      tag: "a2",
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          "$baseUrlImage/${appServices.getUser().picture}",
-                        ),
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        "$baseUrlImage/${appServices.getUser().picture}",
                       ),
                     ),
                   ),
@@ -507,8 +627,7 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
                             ),
                           InkWell(
                             onTap: () {
-
-                              if(indexWidget.value != 0){
+                              if (indexWidget.value != 0) {
                                 return;
                               }
                               if (size == 250) {
@@ -534,7 +653,7 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
       ),
       ValueListenableBuilder(
         valueListenable: _homePageController.cartProducts,
-        builder: (context,p,_) {
+        builder: (context, p, _) {
           return ValueListenableBuilder(
             valueListenable: widthSearchBox,
             builder: (context, size, _) {
@@ -551,7 +670,6 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
-
                             Get.to(CartPage());
                           },
                           borderRadius: BorderRadius.circular(30),
@@ -567,7 +685,9 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: HexColor.fromHex(AppTheme.borderGrey),
+                                    color: HexColor.fromHex(
+                                      AppTheme.borderGrey,
+                                    ),
                                   ),
                                   boxShadow: [
                                     BoxShadow(
@@ -582,14 +702,21 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
                                 ),
                               ),
                               Positioned(
-                                  right: 10,
-                                  child: Container(
-                                      padding: EdgeInsets.all(3),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: HexColor.fromHex(AppTheme.primaryColor)
-                                      ),
-                                      child: Text("${p.length}",style: TextStyle(color: Colors.white),)))
+                                right: 10,
+                                child: Container(
+                                  padding: EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: HexColor.fromHex(
+                                      AppTheme.primaryColor,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "${p.length}",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -600,11 +727,15 @@ AppBar buildAppBar(BuildContext context, [bool? autoBack = false,Function(String
               );
             },
           );
-        }
+        },
       ),
     ],
   );
 }
+List<String> genderList = [
+  "male",
+  "female"
+];
 
 AppBar buildAppBar2() {
   return AppBar(

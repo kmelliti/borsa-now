@@ -120,4 +120,20 @@ class MyAccountServices {
       throw e;
     }
   }
+  Future<void> updatePersonalInformation(Map<String, dynamic> params) async {
+    try {
+      final response = await _dio.put(
+        "/BorsaNow/public/api/v1/customer/information/update/${getLang()}",
+        data: params,
+      );
+      print("Data ${response.data} ");
+      if (response.data["result"] == false) {
+        throw ApiException(response.data["message"]);
+      }
+
+    } catch (e,s) {
+      print("ERrror $e ,$s");
+      throw e;
+    }
+  }
 }

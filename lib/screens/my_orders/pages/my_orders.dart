@@ -20,20 +20,31 @@ class _MyOrdersState extends State<MyOrders> {
   final MyOrdersController _controller = getIt();
   String status = "all";
   late final _pagingController = PagingController<int, MyOrderModel>(
-    getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
-    fetchPage: (pageKey) => _controller.getMyOrders(pageKey,status),
+    getNextPageKey:
+        (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
+    fetchPage: (pageKey) => _controller.getMyOrders(pageKey, status),
   );
 
-  String? _selectedMonth;
+  int? _selectedMonth;
   int? _selectedYear;
   final int baseYear = 2025;
+  ValueNotifier<bool> shakeUp = ValueNotifier(false);
   ValueNotifier<int> filterIndex = ValueNotifier(1);
+
+  late List<int> listOfYears;
 
   @override
   void initState() {
+    _selectedYear = DateTime.now().year;
     if (DateTime.now().year == baseYear) {
       _selectedYear = baseYear;
     }
+    listOfYears = List<int>.generate(
+      DateTime.now().year - baseYear + 1,
+      (index) => DateTime.now().year - index,
+    );
+
+    _selectedMonth = DateTime.now().month;
     super.initState();
   }
 
@@ -49,7 +60,17 @@ class _MyOrdersState extends State<MyOrders> {
             children: [
               buildTitle("my_orders".tr),
               SizedBox(height: 30),
-              dateSelector(),
+              dateSelector(
+                (month) {
+                  _selectedMonth = int.parse(month);
+                  shakeUp.value = !shakeUp.value;
+                },
+                (year) {
+                  _selectedYear = year;
+                  shakeUp.value = !shakeUp.value;
+                },
+                listOfYears,
+              ),
               SizedBox(height: 30),
               dashboard(context),
               SizedBox(height: 20),
@@ -57,17 +78,22 @@ class _MyOrdersState extends State<MyOrders> {
               SizedBox(height: 20),
               PagingListener(
                 controller: _pagingController,
-                builder: (context, state, fetchNextPage) => PagedListView<int, MyOrderModel>(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  state: state,
-                  fetchNextPage: fetchNextPage,
-                  builderDelegate: PagedChildBuilderDelegate(
-                    itemBuilder: (context, item, index) =>   SingleOrder(order: item),
-                  ),
-                ),
-              )
+                builder:
+                    (context, state, fetchNextPage) =>
+                        PagedListView<int, MyOrderModel>(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          state: state,
+                          fetchNextPage: fetchNextPage,
 
+                          builderDelegate: PagedChildBuilderDelegate(
+                            noItemsFoundIndicatorBuilder: noItemFound,
+                            itemBuilder:
+                                (context, item, index) =>
+                                    SingleOrder(order: item),
+                          ),
+                        ),
+              ),
             ],
           ),
         ),
@@ -121,7 +147,7 @@ class _MyOrdersState extends State<MyOrders> {
               InkWell(
                 onTap: () {
                   filterIndex.value = 2;
-                  status = "delivered";
+                  status = "pending";
                   _pagingController.refresh();
                 },
                 child: Container(
@@ -141,7 +167,7 @@ class _MyOrdersState extends State<MyOrders> {
                   ),
                   child: Center(
                     child: Text(
-                      "delivered".tr,
+                      "pending".tr,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color:
                             val == 2
@@ -158,7 +184,7 @@ class _MyOrdersState extends State<MyOrders> {
               InkWell(
                 onTap: () {
                   filterIndex.value = 3;
-                  status = "canceled";
+                  status = "paid";
                   _pagingController.refresh();
                 },
                 child: Container(
@@ -178,7 +204,7 @@ class _MyOrdersState extends State<MyOrders> {
                   ),
                   child: Center(
                     child: Text(
-                      "canceled".tr,
+                      "paid".tr,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color:
                             val == 3
@@ -195,7 +221,7 @@ class _MyOrdersState extends State<MyOrders> {
               InkWell(
                 onTap: () {
                   filterIndex.value = 4;
-                  status = "in review";
+                  status = "fulfilled";
                   _pagingController.refresh();
                 },
                 child: Container(
@@ -215,7 +241,81 @@ class _MyOrdersState extends State<MyOrders> {
                   ),
                   child: Center(
                     child: Text(
-                      "in_review".tr,
+                      "fulfilled".tr,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color:
+                            val == 4
+                                ? Colors.white
+                                : HexColor.fromHex(AppTheme.primaryColor),
+
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  filterIndex.value = 4;
+                  status = "cancelled";
+                  _pagingController.refresh();
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5),
+                  constraints: BoxConstraints(minWidth: 60),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color:
+                        val == 4
+                            ? HexColor.fromHex(AppTheme.primaryColor)
+                            : Colors.white,
+
+                    border: Border.all(
+                      color: HexColor.fromHex(AppTheme.borderColor),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "cancelled".tr,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color:
+                            val == 4
+                                ? Colors.white
+                                : HexColor.fromHex(AppTheme.primaryColor),
+
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  filterIndex.value = 4;
+                  status = "refunded";
+                  _pagingController.refresh();
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5),
+                  constraints: BoxConstraints(minWidth: 60),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color:
+                        val == 4
+                            ? HexColor.fromHex(AppTheme.primaryColor)
+                            : Colors.white,
+
+                    border: Border.all(
+                      color: HexColor.fromHex(AppTheme.borderColor),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "refunded".tr,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color:
                             val == 4
@@ -236,166 +336,110 @@ class _MyOrdersState extends State<MyOrders> {
     );
   }
 
-  Row dashboard(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: HexColor.fromHex(AppTheme.filledBox),
-              border: Border.all(color: HexColor.fromHex(AppTheme.strokeS3)),
-            ),
+  Widget dashboard(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: shakeUp,
+      builder: (context, v, _) {
+        return FutureBuilder(
+          future: _controller.getDashboard(_selectedMonth!, _selectedYear!),
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return Center(child: getLoader());
+            }
+            if (snap.connectionState == ConnectionState.done &&
+                !snap.hasError) {
+              if (snap.data == null) {
+                return Container();
+              }
+              return Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: HexColor.fromHex(AppTheme.filledBox),
+                        border: Border.all(
+                          color: HexColor.fromHex(AppTheme.strokeS3),
+                        ),
+                      ),
 
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "total_orders".tr,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: HexColor.fromHex(AppTheme.primaryColor),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "total_orders".tr,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelMedium?.copyWith(
+                              color: HexColor.fromHex(AppTheme.primaryColor),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+
+                          getPriceInText(
+                            double.parse(snap.data!['totalAmount'].toString()),
+                            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: HexColor.fromHex(AppTheme.primaryColor),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            15,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
+                  SizedBox(width: 20),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: HexColor.fromHex(AppTheme.filledBox),
+                        border: Border.all(
+                          color: HexColor.fromHex(AppTheme.strokeS3),
+                        ),
+                      ),
 
-                Text(
-                  "20202",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: HexColor.fromHex(AppTheme.primaryColor),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "total_products".tr,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelMedium?.copyWith(
+                              color: HexColor.fromHex(AppTheme.primaryColor),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            snap.data!['totalItems'].toString(),
+
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(
+                              color: HexColor.fromHex(AppTheme.primaryColor),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(width: 20),
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: HexColor.fromHex(AppTheme.filledBox),
-              border: Border.all(color: HexColor.fromHex(AppTheme.strokeS3)),
-            ),
-
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "total_products".tr,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: HexColor.fromHex(AppTheme.primaryColor),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "20202",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: HexColor.fromHex(AppTheme.primaryColor),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Row dateSelector() {
-    return Row(
-      children: [
-        Container(
-          width: 150,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: HexColor.fromHex(AppTheme.borderGrey)),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: _selectedMonth,
-              isDense: false,
-
-              itemHeight: 50,
-              hint: Text("month".tr),
-              icon: Icon(Icons.keyboard_arrow_down),
-
-              onChanged: (String? newValue) {
-                _selectedMonth = newValue;
-                setState(() {
-                  _selectedYear = DateTime.now().year;
-                });
-              },
-              items:
-                  <String>[
-                    '0',
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                    '11',
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(monthList[int.parse(value)]),
-                    );
-                  }).toList(),
-            ),
-          ),
-        ),
-        SizedBox(width: 20),
-        Container(
-          width: 150,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: HexColor.fromHex(AppTheme.borderGrey)),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<int>(
-              isDense: false,
-
-              value: _selectedYear,
-
-              itemHeight: 50,
-              hint: Text("year".tr),
-              icon: Icon(Icons.keyboard_arrow_down),
-
-              onChanged: (int? newValue) {
-                setState(() {
-                  _selectedYear = newValue;
-                });
-              },
-              items:
-                  List<int>.generate(
-                    DateTime.now().year - baseYear + 1,
-                    (index) => DateTime.now().year - index,
-                  ).map<DropdownMenuItem<int>>((int value) {
-                    return DropdownMenuItem<int>(
-                      value: value,
-                      child: Text(value.toString()),
-                    );
-                  }).toList(),
-            ),
-          ),
-        ),
-      ],
+                ],
+              );
+            }
+            return Container();
+          },
+        );
+      },
     );
   }
 }

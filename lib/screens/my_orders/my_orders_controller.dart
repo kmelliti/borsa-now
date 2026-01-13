@@ -16,6 +16,12 @@ class MyOrdersController {
   Future<OrderDetailModel> getOrderDetail(int orderId) async {
     return _services.getOrderDetail(orderId);
   }
+  Future<void> reOrder(int orderId) async {
+    return _services.reOrder(orderId);
+  }
+  Future<Map> getDashboard(int month,int year) async {
+    return _services.getDashboard(month, year);
+  }
 
 
 

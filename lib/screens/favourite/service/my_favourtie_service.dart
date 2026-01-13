@@ -20,7 +20,7 @@ class MyFavouriteService {
   Future<List<FavouriteModel>> getMyFavourites ()async{
     final AppServices appServices = getIt();
     try {
-      final response = await _dio.get("/BorsaNow/public/api/v1/investor/deal/list/favorites/${getLang()}",queryParameters: {
+      final response = await _dio.get("/BorsaNow/public/api/v1/customer/retail/list/favorites/${getLang()}",queryParameters: {
         "token":appServices.getToken()
       });
       if (response.data["result"] == false) {

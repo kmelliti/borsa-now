@@ -24,6 +24,8 @@ class _OrderDetailsState extends State<OrderDetails> {
   late MyOrderModel o;
 
   final MyOrdersController _controller = getIt();
+  final ValueNotifier<bool> isLoading = ValueNotifier(false);
+
 
   @override
   void initState() {
@@ -54,6 +56,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                   children: [
                     SizedBox(height: 20),
                     Row(
+
                       children: [
                         Text(
                           "${"my_orders".tr} / ",
@@ -91,9 +94,10 @@ class _OrderDetailsState extends State<OrderDetails> {
                         child: Column(
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  detailModel.status,
+                                  detailModel.status.tr,
                                   style: Theme.of(
                                     context,
                                   ).textTheme.labelMedium?.copyWith(
@@ -162,8 +166,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 height: 160,
                                 width: double.infinity,
                                 decoration: BoxDecoration(
-                                  // color: HexColor.fromHex("#F4F4F4"),
-                                  color: Colors.red,
+                                  color: HexColor.fromHex("#F4F4F4"),
+
 
                                   borderRadius: BorderRadius.circular(15),
                                 ),
@@ -339,9 +343,26 @@ class _OrderDetailsState extends State<OrderDetails> {
                     Row(
                       children: [
                         Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: Text("reorder".tr),
+                          child: ValueListenableBuilder(
+                            valueListenable: isLoading,
+                            builder: (context,v,_) {
+                              return v ? Center(child: getLoader(),) : ElevatedButton(
+                                onPressed: ()async {
+                                  try{
+                                    isLoading.value = true;
+                                    await _controller.reOrder(detailModel.id);
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("reorder_success".tr)));
+
+                                  }catch(e,s){
+                                    handleException(context, e  );
+                                    print("$e , $s");
+                                  }
+                                  isLoading.value = false;
+
+                                },
+                                child: Text("reorder".tr),
+                              );
+                            }
                           ),
                         ),
                         SizedBox(width: 10),
@@ -358,7 +379,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                   ),
                                 ),
                                 builder: (c) {
-                                  return RateProductWidget(productId: "");
+                                  return RateProductWidget(productId: detailModel.id.toString());
                                 },
                               );
                             },

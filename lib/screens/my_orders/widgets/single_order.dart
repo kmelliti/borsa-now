@@ -27,7 +27,7 @@ class SingleOrder extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  order.status,
+                  order.status.tr,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: Colors.green,
                     fontSize: 16,

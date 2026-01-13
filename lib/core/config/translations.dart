@@ -232,6 +232,18 @@ class AppTranslation extends Translations {
       "message":"الرسالة",
       "send":"إرسال",
       "payment":"الدفع"
+      "pending": "قيد الانتظار",
+      "paid": "مدفوع",
+      "fulfilled": "تم التنفيذ",
+      "cancelled": "ملغى",
+      "refunded": "تم الاسترجاع",
+      "reorder_success":"تم إعادة الطلب بنجاح",
+      "no_item_found":"لا يوجد بيانات",
+      "wish_list_and_favorites":"قائمة المفضلة والرغبات",
+      "are_you_sure_you_want_to_remove_this_favourite":"هل أنت متأكد أنك تريد إزالة هذا المنتج من المفضلة؟",
+      "yes_remove":"نعم، إزالة",
+      "no_keep":"لا، احتفظ به",
+      "language":"اللغة"
 
     },
   };
