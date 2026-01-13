@@ -226,7 +226,12 @@ class AppTranslation extends Translations {
       "reorder":"إعادة الطلب",
       "leave_comment":"اترك تقييمك",
 
-      "notifications":"الإشعارات"
+      "notifications":"الإشعارات",
+
+      "object":"الموضوع",
+      "message":"الرسالة",
+      "send":"إرسال",
+      "payment":"الدفع"
 
     },
   };

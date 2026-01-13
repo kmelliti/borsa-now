@@ -22,6 +22,14 @@ class MainScreen extends StatelessWidget {
     {'icon': 'assets/icons/help.svg', 'label': 'help'.tr},
   ];
 
+  final listScreens = [
+    MyAccount(),
+    MyOrders(),
+    HomePage(key: Key("home"),),
+    MyFavourites(),
+    ContactPage(),
+  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -29,28 +37,12 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
       body: ValueListenableBuilder(
         valueListenable: indexWidget,
-        builder: (c,i,_){
-
-          print("Builder");
-           switch(i){
-            case 0:
-              return MyAccount();
-
-            case 1:
-              return MyOrders();
-            case 2:
-              return HomePage(key: Key("home"),);
-            case 3:
-              return MyFavourites();
-            case 4:
-              return ContactPage();
-
-            default:
-              return HomePage();
-          }
-        },
+        builder: (c,i,_) {
+          return IndexedStack(index: indexWidget.value, children: listScreens);
+        }
       ),
       bottomNavigationBar: CustomBottomNav(items: items, selectedIndex: 2, onItemTapped: (int index) {
+        // FocusScope.of(context).unfocus();
         indexWidget.value = index;
       }),
     );

@@ -78,9 +78,15 @@ class HomePageController {
 
     cartProducts.value = [...products];
   }
+
   void removeCartProducts(DealProductModel product) {
     List<DealProductModel> products = cartProducts.value;
     products.remove(product);
     cartProducts.value = [...products];
+  }
+
+  void addCartProducts(List<DealProductModel> products) async {
+    return await _homePageService.addCartProducts(products);
+
   }
 }
