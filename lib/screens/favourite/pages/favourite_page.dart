@@ -41,7 +41,7 @@ class _MyFavouritesState extends State<MyFavourites> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, true),
+      appBar: buildAppBar(context, false),
       body: Container(
         width: double.infinity,
         margin: EdgeInsets.all(20),
@@ -87,32 +87,36 @@ class _MyFavouritesState extends State<MyFavourites> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 0.58,
+                      childAspectRatio: 0.67,
                     ),
                     itemCount: favs.length,
                     itemBuilder: (context, index) {
                       return Card(
-                        elevation: 1,
+                        elevation: 0.1,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(
                             color: HexColor.fromHex("#F3F3F4"),
+                            width: 0.5
                           ),
                         ),
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding: EdgeInsets.all(12),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildImageColorBuilder(index),
+                             buildImageColorBuilder(index),
+
+
+
                               SizedBox(height: 10,),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Row(
                                   children: [
-                                    Text(favs[index].wholesalePrice,style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w800,
+                                    Text(favs[index].retailPrice,style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
                                       color: HexColor.fromHex(AppTheme.primaryColor),
                                     ),),
                                     SizedBox(width: 5),
@@ -124,7 +128,7 @@ class _MyFavouritesState extends State<MyFavourites> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 10,),
+                              SizedBox(height: 5,),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 2.0),
                                 child: Row(
@@ -133,9 +137,10 @@ class _MyFavouritesState extends State<MyFavourites> {
                                     StarRating(
                                       rating: 1,
                                       starCount: 1,
+                                      color: HexColor.fromHex("#FFC120"),
                                     ),
                                     SizedBox(width: 5,),
-                                    Text("4.5",style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                    Text("3",style: Theme.of(context).textTheme.displayLarge?.copyWith(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w800,
                                       color: HexColor.fromHex("#1E1D33"),
@@ -143,12 +148,14 @@ class _MyFavouritesState extends State<MyFavourites> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 10,),
+
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                                child:     Text(favs[index].product.name,maxLines :1 , overflow: TextOverflow.ellipsis,style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  fontSize: 16,
+                                child:     Text(favs[index].product.name,maxLines :1 ,
+                                  overflow: TextOverflow.ellipsis,style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.3,
                                   color: HexColor.fromHex("#1E1D33"),
                                 ),),
                               ),
@@ -172,10 +179,10 @@ class _MyFavouritesState extends State<MyFavourites> {
       children: [
         ImageColorBuilder(
           url: "$baseUrlImage/${favs[index].product.productPictures.first.picture}",
+          fit: BoxFit.cover,
           placeholder: (c,s) {
             return Container(
-              height: 150,
-              width: 150,
+              height: 132,
               decoration: BoxDecoration(
                 color: HexColor.fromHex("#F4F4F4"),
                 borderRadius: BorderRadius.circular(20),
@@ -185,8 +192,8 @@ class _MyFavouritesState extends State<MyFavourites> {
           },
           builder: (c, image, color) {
             return Container(
-              height: 150,
-              width: 150,
+              height: 132,
+
 
               decoration: BoxDecoration(
                 color: color,
@@ -261,7 +268,7 @@ class _MyFavouritesState extends State<MyFavourites> {
 
                     try{
                       await _homePageController.addDeleteFav({
-                        "wholesale_offer_id":favs[index].id,
+                        "retail_listing_id":favs[index].id,
                       });
                       isLoading.value = false;
                       Get.back();

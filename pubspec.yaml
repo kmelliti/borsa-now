@@ -127,6 +127,7 @@ flutter:
     - assets/icons/logo.svg
     - assets/icons/check_green.svg
     - assets/icons/alert_rect.svg
+    - assets/icons/remove_fav.svg
     - assets/icons/
 
 
