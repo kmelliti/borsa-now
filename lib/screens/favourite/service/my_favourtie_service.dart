@@ -23,6 +23,7 @@ class MyFavouriteService {
       final response = await _dio.get("/BorsaNow/public/api/v1/customer/retail/list/favorites/${getLang()}",queryParameters: {
         "token":appServices.getToken()
       });
+      print("sdgdsfhgsdfg : ${response.data}");
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
       }

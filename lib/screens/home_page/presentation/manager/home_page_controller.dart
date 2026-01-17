@@ -2,6 +2,7 @@ import 'package:borsa_now_bis/core/di/di.dart';
 import 'package:borsa_now_bis/core/models/lookup_model.dart';
 import 'package:borsa_now_bis/core/services/app_service.dart';
 import 'package:borsa_now_bis/core/services/home_page_service.dart';
+import 'package:borsa_now_bis/screens/home_page/data/models/ad_model.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/brand_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,7 +28,12 @@ class HomePageController {
     return await _homePageService.getDealProducts(pageKey,value);
   }
 
-  Future<List> getPromos() async {
+  Future<DealProductModel>getDealDetails(int dealId) async {
+
+    return await _homePageService.getDealDetails(dealId);
+  }
+
+  Future<List<AdModel>> getPromos() async {
     return await _homePageService.getPromos();
   }
 

@@ -47,15 +47,10 @@ class _SingleItemShoppingGridState extends State<SingleItemShoppingGrid> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.dealProductModel.product.name,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    // fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                getPriceInText( double.tryParse(widget.dealProductModel.retailPrice) ?? 0, Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: HexColor.fromHex(AppTheme.primaryColor),
-                    // letterSpacing: 0.2,
-                  ),
-                ),
+                    fontSize: 16
+                ),12),
                 // SizedBox(height: 10),
                 // Row(
                 //   children: [
@@ -67,7 +62,7 @@ class _SingleItemShoppingGridState extends State<SingleItemShoppingGrid> {
 
                 SizedBox(height: 10),
 
-                widget.dealProductModel.product.rates.length > 0 ?
+                widget.dealProductModel.product.rates != null && widget.dealProductModel.product.rates!.length > 0 ?
                 Row(
                   children: [
                     SizedBox(
@@ -81,14 +76,14 @@ class _SingleItemShoppingGridState extends State<SingleItemShoppingGrid> {
                       builder: (context) {
 
                         var rating = 0;
-                        widget.dealProductModel.product.rates.forEach((element) {
+                        widget.dealProductModel.product.rates?.forEach((element) {
                           rating += element.rate == null ? 0 : element.rate!;
                           // print("elemmmmm: ${element.comment}");
                         });
 
                         return Text(
 
-                            (rating/widget.dealProductModel.product.rates.length).toString(),
+                            (rating/widget.dealProductModel.product.rates!.length).toString(),
                           style: TextStyle(
                             color: HexColor.fromHex(AppTheme.textColor),
                             fontSize: 16,
@@ -184,16 +179,16 @@ class _SingleItemShoppingGridState extends State<SingleItemShoppingGrid> {
             shape: BoxShape.rectangle,
             // color: snap.data,
             //color: HexColor.fromHex("#EFEFE3"),
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(15),
 
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(0.0),
             child: Center(
 
               child: ClipRRect(
 
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(20),
                   child: Image.network("${baseUrlImage}${widget.dealProductModel.product.productPictures.first.picture}",fit: BoxFit.cover, height: 178,      // Optional: Define a specific height
                     width: double.infinity,)),
 

@@ -5,6 +5,7 @@ import 'package:borsa_now_bis/core/config/utils.dart';
 import 'package:borsa_now_bis/core/models/lookup_model.dart';
 import 'package:borsa_now_bis/core/routes/app_routes.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
+import 'package:borsa_now_bis/screens/home_page/data/models/ad_model.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/brand_model.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/deal_product_model.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
@@ -29,7 +30,7 @@ ValueNotifier<bool> promosLoading = ValueNotifier(false);
 ValueNotifier<bool> categoriesLoading = ValueNotifier(false);
 ValueNotifier<bool> brandsLoading = ValueNotifier(false);
 
-List promos = [];
+List <AdModel>promos = [];
 List<LookUpModel> categories = [];
 List<BrandModel> brands = [];
 
@@ -167,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
-                        Text("الفئات", style: Theme.of(context,)
+                        Text("categories".tr, style: Theme.of(context,)
                             .textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w800,
                           // color: Colors.white,
@@ -216,7 +217,7 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
-                        Text("التجار الرائجون", style: Theme.of(context,)
+                        Text("brands".tr, style: Theme.of(context,)
                             .textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w800,
                           // color: Colors.white,
@@ -283,7 +284,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
-                    childAspectRatio: .46,
+                    childAspectRatio: .55,
                   ),
 
                   // Build your grid tiles
@@ -303,6 +304,11 @@ class _HomePageState extends State<HomePage> {
 
 
                         },))),
+                    noItemsFoundIndicatorBuilder: (context) => Center(
+                      child: Text(
+                        "noItemFound".tr
+                      ),
+                    )
                   ),
                 ),
               ),
@@ -410,16 +416,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                           context: context,
                           builder: (context) {
-                            return Filters(itemsCategory: categories, onFilter: (Map<String, dynamic> f) {
+                            return Filters(itemsCategory: categories, onFilter: (Map<String, dynamic>? f) {
 
 
-                              filters.value = f;
-                              _pagingController.refresh();
+
 
                               if (filters.value != null) {
                                 if (filters.value!.isEmpty)
                                   filters.value = null;
                               }
+
+                              filters.value = f;
+                              _pagingController.refresh();
 
                               setState(() {
 
