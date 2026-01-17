@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:borsa_now_bis/core/config/utils.dart';
+import 'package:borsa_now_bis/screens/home_page/data/models/ad_model.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/brand_model.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/review_response_model.dart';
 import 'package:dio/dio.dart';
@@ -57,6 +58,26 @@ class HomePageService {
     }
   }
 
+  Future<DealProductModel>getDealDetails(int dealId) async {
+
+    try {
+      // final response = await _dio.get("/BorsaNow/public/api/v1/customer/deals/${getLang()}?id=$dealId");
+      final response = await _dio.get("/BorsaNow/public/api/v1/customer/retail/$dealId/${getLang()}");
+
+      if (response.data["result"] == false) {
+        throw ApiException(response.data["message"]);
+      }
+
+      log("xxxxxxxxxxxxxxxxxx:  ${response.data}");
+
+      return DealProductModel.fromJson(response.data["data"]);
+    } catch (e, s) {
+      log("aaaaaa    $e $s");
+      throw e;
+    }
+
+  }
+
   Future<List<DealProductModel>> getRelatedDeals(int dealId) async {
     try {
       // final response = await _dio.get("/BorsaNow/public/api/v1/customer/deals/${getLang()}?id=$dealId");
@@ -69,20 +90,31 @@ class HomePageService {
     }
   }
 
-  Future<List> getPromos() async {
+  Future<List<AdModel>> getPromos() async {
+
 
     try {
+      final response = await _dio.get("/BorsaNow/public/api/v1/general/ads/${getLang()}");
 
-      await Future.delayed(Duration(seconds: 3));
-      return [
-        {"title": "لا تفوت فرصة آيفون 17!", "save": "20%", "color": "#E5864C"},
-        {"title": "أشهى مشروبات ستاربكس® بانتظارك!", "save": "20%", "color": "#0B6648"},
-        {"title": "لا تفوت فرصة آيفون 17!", "save": "20%", "color": "#0000FF"},
-      ];
+      return (response.data['data'] as List).map((e) => AdModel.fromJson(e)).toList();
     } catch (e, s) {
       log("$e $s");
       throw e;
     }
+
+
+    // try {
+    //
+    //   await Future.delayed(Duration(seconds: 3));
+    //   return [
+    //     {"title": "لا تفوت فرصة آيفون 17!", "save": "20%", "color": "#E5864C"},
+    //     {"title": "أشهى مشروبات ستاربكس® بانتظارك!", "save": "20%", "color": "#0B6648"},
+    //     {"title": "لا تفوت فرصة آيفون 17!", "save": "20%", "color": "#0000FF"},
+    //   ];
+    // } catch (e, s) {
+    //   log("$e $s");
+    //   throw e;
+    // }
   }
 
   Future<List<BrandModel>> getBrands() async {
@@ -149,7 +181,7 @@ class HomePageService {
         throw ApiException(response.data["message"]);
       }
 
-      log("ezuyryeuzioaryueziy:  ${response.data}");
+
       return true;
 
     } catch (e, s) {

@@ -317,8 +317,9 @@ class Product {
   dynamic deletedBy;
   DateTime createdAt;
   DateTime updatedAt;
+  dynamic avgRate;
   List<ProductPicture> productPictures;
-  List<Rates> rates;
+  List<Rates>? rates;
 
   Product({
     required this.id,
@@ -335,8 +336,9 @@ class Product {
     required this.deletedBy,
     required this.createdAt,
     required this.updatedAt,
+    required this.avgRate,
     required this.productPictures,
-    required this.rates,
+    this.rates,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -355,7 +357,8 @@ class Product {
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     productPictures: List<ProductPicture>.from(json["product_pictures"].map((x) => ProductPicture.fromJson(x))),
-    rates: List<Rates>.from(json["rates"].map((x) => x)),
+    rates: json["rates"] != null ? List<Rates>.from(json["rates"]?.map((x) => x)) : null,
+    avgRate: json["avg_rate"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -371,10 +374,11 @@ class Product {
     "created_by": createdBy,
     "updated_by": updatedBy,
     "deleted_by": deletedBy,
+    "avg_rate": avgRate,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "product_pictures": List<dynamic>.from(productPictures.map((x) => x.toJson())),
-    "rates": List<dynamic>.from(rates.map((x) => x)),
+    "rates": rates != null ? List<dynamic>.from(rates!.map((x) => x)) : null,
   };
 }
 

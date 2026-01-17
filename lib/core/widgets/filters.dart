@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 import '../di/di.dart';
 import '../services/app_service.dart';
 
-typedef FilterCallback = void Function(Map<String, dynamic> filters);
+typedef FilterCallback = void Function(Map<String, dynamic>? filters);
 
 class Filters extends StatefulWidget {
   const Filters({super.key, required this.onFilter, required this.itemsCategory});
@@ -337,12 +337,12 @@ class _FiltersState extends State<Filters> {
             Map<String,dynamic> filters = {
               // "quantity_min": jsonEncode(_quantityRangeValues.start),
               // "quantity_max": jsonEncode(_quantityRangeValues.end),
-              // "price_max": jsonEncode(_currentPriceRangeValues.end),
-              // "price_min": jsonEncode(_currentPriceRangeValues.start),
-              // "invest_min": jsonEncode(_reqQuantityRangeValues.start),
-              // "invest_max": jsonEncode(_reqQuantityRangeValues.end),
-              // "discount": jsonEncode(discounted ? 1 :0),
-              // "rates": jsonEncode(rates.value.map((r)=>r).toList()),
+              "price_max": jsonEncode(_currentPriceRangeValues.end),
+              "price_min": jsonEncode(_currentPriceRangeValues.start),
+              "invest_min": jsonEncode(_reqQuantityRangeValues.start),
+              "invest_max": jsonEncode(_reqQuantityRangeValues.end),
+              "discount": jsonEncode(discounted ? 1 :0),
+              "rates": jsonEncode(rates.value.map((r)=>r).toList()),
               // "categories": jsonEncode(widget.itemsCategory.where((s) => s.selected == true).toList().map((lm) => lm.id).toList()),
             };
 
@@ -364,7 +364,9 @@ class _FiltersState extends State<Filters> {
 
           }, child: Text("apply_filers".tr)),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              widget.onFilter(null);
+            },
             child: Text(
               "reset_filters".tr,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(

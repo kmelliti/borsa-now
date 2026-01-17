@@ -91,6 +91,7 @@ class Product {
   dynamic deletedBy;
   DateTime createdAt;
   DateTime updatedAt;
+  dynamic avgRate;
   List<ProductPicture> productPictures;
 
   Product({
@@ -108,6 +109,7 @@ class Product {
     required this.deletedBy,
     required this.createdAt,
     required this.updatedAt,
+    required this.avgRate,
     required this.productPictures,
   });
 
@@ -126,6 +128,7 @@ class Product {
     deletedBy: json["deleted_by"],
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
+    avgRate: json["avg_rate"],
     productPictures: List<ProductPicture>.from(json["product_pictures"].map((x) => ProductPicture.fromJson(x))),
   );
 
@@ -144,6 +147,7 @@ class Product {
     "deleted_by": deletedBy,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
+    "avg_rate": avgRate,
     "product_pictures": List<dynamic>.from(productPictures.map((x) => x.toJson())),
   };
 }

@@ -1,17 +1,33 @@
+import 'dart:math';
+
 import 'package:borsa_now_bis/core/config/utils.dart';
+import 'package:borsa_now_bis/screens/home_page/data/models/ad_model.dart';
 import 'package:custom_dots_indicator/custom_dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'deal_details.dart';
 
 final ScrollController _scrollController = ScrollController();
 
 class PromosWidget extends StatelessWidget {
-  final List promos;
+  final List<AdModel> promos;
 
 
 
   const PromosWidget({
     super.key, required this.promos,
   });
+
+  Color getRandomColor() {
+    final random = Random();
+    return Color.fromARGB(
+      255, // Opacity (0-255)
+      random.nextInt(256), // Red
+      random.nextInt(256), // Green
+      random.nextInt(256), // Blue
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,44 +45,49 @@ class PromosWidget extends StatelessWidget {
                   parent: BouncingScrollPhysics(),
                 ),
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    width: 242,
-                    height: 106,
-                    decoration: BoxDecoration(
-                        color: HexColor.fromHex(promos[index]["color"]),
-                        borderRadius: BorderRadius.circular(12)
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                              child: SizedBox(width: 120,
-                                child: Text(promos[index]["title"],
-                                  style: Theme.of(context,)
-                                      .textTheme.bodySmall?.copyWith(
-                                    color: Colors.white,
+                  return InkWell(
+                    onTap: (){
+                      Get.to(DealDetails(dealId: promos[index].id));
+                    },
+                    child: Container(
+                      width: 242,
+                      height: 106,
+                      decoration: BoxDecoration(
+                          color: getRandomColor(),
+                          borderRadius: BorderRadius.circular(12)
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                child: SizedBox(width: 120,
+                                  child: Text(promos[index].message,
+                                    style: Theme.of(context,)
+                                        .textTheme.bodySmall?.copyWith(
+                                      color: Colors.white,
+                                    ),
                                   ),
+                                )
+                            ),
+                            Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                    color: Colors.white.withAlpha(100),
+                                    borderRadius: BorderRadius.circular(12)
                                 ),
-                              )
-                          ),
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white.withAlpha(100),
-                                  borderRadius: BorderRadius.circular(12)
-                              ),
-                              child: Text("${promos[index]["save"]}-",
-                                  style: Theme.of(context,)
-                                      .textTheme.bodyMedium?.copyWith(
+                                child: Text("${promos[index].discount}-",
+                                    style: Theme.of(context,)
+                                        .textTheme.bodyMedium?.copyWith(
 
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                  )
-                              )
-                          ),
-                        ],
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    )
+                                )
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

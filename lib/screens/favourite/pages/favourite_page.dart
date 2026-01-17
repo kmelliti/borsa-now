@@ -91,6 +91,7 @@ class _MyFavouritesState extends State<MyFavourites> {
                     ),
                     itemCount: favs.length,
                     itemBuilder: (context, index) {
+
                       return Card(
                         elevation: 0.1,
                         shape: RoundedRectangleBorder(
@@ -140,7 +141,7 @@ class _MyFavouritesState extends State<MyFavourites> {
                                       color: HexColor.fromHex("#FFC120"),
                                     ),
                                     SizedBox(width: 5,),
-                                    Text("3",style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                    Text(favs[index].product.avgRate.toString() ,style: Theme.of(context).textTheme.displayLarge?.copyWith(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w800,
                                       color: HexColor.fromHex("#1E1D33"),
@@ -164,6 +165,7 @@ class _MyFavouritesState extends State<MyFavourites> {
                           ),
                         ),
                       );
+
                     },
                   ),
                 )

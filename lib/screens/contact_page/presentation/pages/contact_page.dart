@@ -1,4 +1,6 @@
 import 'package:borsa_now_bis/core/config/utils.dart';
+import 'package:borsa_now_bis/core/di/di.dart';
+import 'package:borsa_now_bis/screens/contact_page/presentation/manager/contact_page_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,6 +12,8 @@ class ContactPage extends StatefulWidget {
 }
 
 class _ContactPageState extends State<ContactPage> {
+
+  final ContactPageController _contactPageController = getIt<ContactPageController>();
 
   final TextEditingController _textObjectController = TextEditingController();
   final TextEditingController _textMessageController = TextEditingController();
@@ -89,7 +93,29 @@ class _ContactPageState extends State<ContactPage> {
               SizedBox(height: 20,),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: ElevatedButton(onPressed: () {
+                child: ElevatedButton(onPressed: () async {
+
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => Center(
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: CircularProgressIndicator(strokeWidth: 3),
+                        ),
+                      ),
+                    ),
+                  );
+
+                  await _contactPageController.contactUs(_textObjectController.text, _textMessageController.text);
+                  if (context.mounted) Navigator.of(context).pop();
         
                 }, child: Text("send".tr)),
               ),
@@ -101,4 +127,5 @@ class _ContactPageState extends State<ContactPage> {
       ),
     );
   }
+
 }

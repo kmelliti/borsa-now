@@ -231,7 +231,7 @@ class AppTranslation extends Translations {
       "object":"الموضوع",
       "message":"الرسالة",
       "send":"إرسال",
-      "payment":"الدفع"
+      "payment":"الدفع",
       "pending": "قيد الانتظار",
       "paid": "مدفوع",
       "fulfilled": "تم التنفيذ",
@@ -243,7 +243,10 @@ class AppTranslation extends Translations {
       "are_you_sure_you_want_to_remove_this_favourite":"هل أنت متأكد أنك تريد إزالة هذا المنتج من المفضلة؟",
       "yes_remove":"نعم، إزالة",
       "no_keep":"لا، احتفظ به",
-      "language":"اللغة"
+      "language":"اللغة",
+      "categories":"الفئات",
+      "brands":"التجار الرائجون",
+      "noItemFound":"لا يوجد منتجات",
 
     },
   };

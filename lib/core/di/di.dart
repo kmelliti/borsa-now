@@ -1,8 +1,10 @@
 import 'package:borsa_now_bis/core/config/dio_inizializer.dart';
 import 'package:borsa_now_bis/core/services/auth_services.dart';
+import 'package:borsa_now_bis/core/services/contact_page_service.dart';
 import 'package:borsa_now_bis/core/services/home_page_service.dart';
 import 'package:borsa_now_bis/core/services/my_account_services.dart';
 import 'package:borsa_now_bis/core/services/my_orders_services.dart';
+import 'package:borsa_now_bis/screens/contact_page/presentation/manager/contact_page_controller.dart';
 import 'package:borsa_now_bis/screens/my_account/presentation/manager/my_account_controller.dart';
 import 'package:borsa_now_bis/screens/my_orders/my_orders_controller.dart';
 import 'package:get_it/get_it.dart';
@@ -43,5 +45,7 @@ Future<void> setup() async {
   getIt.registerLazySingleton(()=>FavouriteController(getIt()));
   getIt.registerLazySingleton(()=>MyOrderServices(getIt()));
   getIt.registerLazySingleton(()=>MyOrdersController(getIt()));
+  getIt.registerLazySingleton(()=>ContactPageController(getIt()));
+  getIt.registerLazySingleton(()=>ContactPageService(getIt()));
 
 }
