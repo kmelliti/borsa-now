@@ -11,12 +11,15 @@ import 'package:borsa_now_bis/screens/home_page/data/models/deal_product_model.d
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/widgets/single_item_shopping_grid.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating/flutter_rating.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_color_builder/image_color_builder.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+import '../../../../core/config/app_constants.dart';
 import '../../../../core/config/bottom_navigator.dart';
 import '../../../../core/di/di.dart';
 import '../../../../core/widgets/filters.dart';
@@ -30,7 +33,7 @@ ValueNotifier<bool> promosLoading = ValueNotifier(false);
 ValueNotifier<bool> categoriesLoading = ValueNotifier(false);
 ValueNotifier<bool> brandsLoading = ValueNotifier(false);
 
-List <AdModel>promos = [];
+List<AdModel> promos = [];
 List<LookUpModel> categories = [];
 List<BrandModel> brands = [];
 
@@ -45,31 +48,28 @@ class _HomePageState extends State<HomePage> {
   final HomePageController _homePageController = getIt<HomePageController>();
 
   // ValueNotifier<Map<String,dynamic>> filters = ValueNotifier(Map());
-  ValueNotifier<Map<String,dynamic>?> filters = ValueNotifier(null);
+  ValueNotifier<Map<String, dynamic>?> filters = ValueNotifier(null);
 
-
-  late final _pagingController =  PagingController<int, DealProductModel>(
+  late final _pagingController = PagingController<int, DealProductModel>(
     // getNextPageKey: (state) => (state.keys?.last ?? 0) + 1,
-    getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
-    fetchPage: (pageKey) => _homePageController.getDealProducts(pageKey, filters.value),
-
+    getNextPageKey:
+        (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
+    fetchPage:
+        (pageKey) =>
+            _homePageController.getDealProducts(pageKey, filters.value),
   );
 
   @override
   Future<void> fetchPromos() async {
-
     promosLoading.value = true;
     promos = await _homePageController.getPromos();
     promosLoading.value = false;
-
   }
 
   Future<void> fetchCategories() async {
-
     categoriesLoading.value = true;
     categories = await _homePageController.getCategories();
     categoriesLoading.value = false;
-
   }
 
   Future<void> fetchBrands() async {
@@ -77,19 +77,15 @@ class _HomePageState extends State<HomePage> {
     brands = await _homePageController.getBrands();
     print("brands: $brands");
     brandsLoading.value = false;
-
   }
 
   void initState() {
-
-
     // Map<String, dynamic> s = {
     //   // "categories": Uri.encodeComponent(jsonEncode([1])),
     //   "categories": jsonEncode([1]),
     // };
     //
     // filters.value = s;
-
 
     fetchPromos();
     fetchCategories();
@@ -100,14 +96,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
-      appBar: buildAppBar(context,null,(v){
+      appBar: buildAppBar(context, null, (v) {
         log("$v");
-        filters.value = {
-          "product_name":v
-        };
+        filters.value = {"product_name": v};
         _pagingController.refresh();
       }),
 
@@ -118,7 +110,6 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   SizedBox(height: 40),
                   // Animated search bar
                   AnimatedContainer(
@@ -130,51 +121,56 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
 
-
                   /**********************************************************************/
                   ValueListenableBuilder(
-                      valueListenable: promosLoading,
-                      builder: (context, isLoading, _) {
+                    valueListenable: promosLoading,
+                    builder: (context, isLoading, _) {
+                      return AnimatedSize(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOut,
+                        child: SizedBox(
+                          height: !isLoading && promos.length > 0 ? null : 0,
+                          //  isLoading ? 0 : null,
+                          child: PromosWidget(promos: promos),
+                        ),
+                      );
 
-                        return AnimatedSize(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                          child: SizedBox(
-                            height: !isLoading && promos.length > 0 ? null : 0,//  isLoading ? 0 : null,
-                            child: PromosWidget(promos: promos,),
-                          ),
-                        );
-
-                        return isLoading ?
-                        // SizedBox(
-                        //     height: 126,
-                        //     child: Center(
-                        //         child: CircularProgressIndicator()
-                        //     )
-                        // ) :
-                        // ShimmerPromoWidget():
-                        Container() :
-                        PromosWidget(promos: promos,);
-                      }
+                      return isLoading
+                          ?
+                          // SizedBox(
+                          //     height: 126,
+                          //     child: Center(
+                          //         child: CircularProgressIndicator()
+                          //     )
+                          // ) :
+                          // ShimmerPromoWidget():
+                          Container()
+                          : PromosWidget(promos: promos);
+                    },
                   ),
 
                   /**********************************************************************/
-
                   SizedBox(height: 20),
-
-
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
-                        Text("categories".tr, style: Theme.of(context,)
-                            .textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          // color: Colors.white,
-                        ),),
-                        SizedBox(width: 10,),
-                        SvgPicture.asset("assets/icons/arrow.svg", width: 14, height: 12),
+                        Text(
+                          "categories".tr,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            // color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        SvgPicture.asset(
+                          "assets/icons/arrow.svg",
+                          width: 14,
+                          height: 12,
+                        ),
                       ],
                     ),
                   ),
@@ -182,48 +178,54 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 20),
 
                   ValueListenableBuilder(
-                      valueListenable: categoriesLoading,
-                      builder: (context, isLoading, _) {
-                        return isLoading ?
-                        ShimmerFilterWidget() :
-                        CategoriesWidget(categories: categories, onItemClicked: (idsList) {
+                    valueListenable: categoriesLoading,
+                    builder: (context, isLoading, _) {
+                      return isLoading
+                          ? ShimmerFilterWidget()
+                          : CategoriesWidget(
+                            categories: categories,
+                            onItemClicked: (idsList) {
+                              if (idsList.length > 0) {
+                                Map<String, dynamic> s = filters.value ?? Map();
+                                s["categories"] = jsonEncode(idsList);
 
-                          if (idsList.length > 0) {
-                            Map<String, dynamic> s = filters.value ?? Map();
-                            s["categories"] = jsonEncode(idsList);
+                                filters.value = s;
+                              } else {
+                                filters.value?.remove('categories');
+                              }
 
-                            filters.value = s;
-                          }
-                          else {
-                            filters.value?.remove('categories');
-                          }
+                              if (filters.value != null) {
+                                if (filters.value!.isEmpty)
+                                  filters.value = null;
+                              }
 
-                          if (filters.value != null) {
-                            if (filters.value!.isEmpty)
-                              filters.value = null;
-                          }
-
-                          _pagingController.refresh();
-
-                        },);
-                      }
+                              _pagingController.refresh();
+                            },
+                          );
+                    },
                   ),
 
                   SizedBox(height: 40),
 
-
-
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
-                        Text("brands".tr, style: Theme.of(context,)
-                            .textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          // color: Colors.white,
-                        ),),
-                        SizedBox(width: 10,),
-                        SvgPicture.asset("assets/icons/arrow.svg", width: 14, height: 12),
+                        Text(
+                          "brands".tr,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            // color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        SvgPicture.asset(
+                          "assets/icons/arrow.svg",
+                          width: 14,
+                          height: 12,
+                        ),
                       ],
                     ),
                   ),
@@ -231,99 +233,215 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 20),
 
                   ValueListenableBuilder(
-                      valueListenable: brandsLoading,
-                      builder: (context, isLoading, _) {
-                        return isLoading ?
-                        ShimmerFilterWidget() :
-                        BrandsWidget(brands: brands, onItemClicked: (idsList) {
+                    valueListenable: brandsLoading,
+                    builder: (context, isLoading, _) {
+                      return isLoading
+                          ? ShimmerFilterWidget()
+                          : BrandsWidget(
+                            brands: brands,
+                            onItemClicked: (idsList) {
+                              if (idsList.length > 0) {
+                                Map<String, dynamic> s = filters.value ?? Map();
+                                s["brands"] = jsonEncode(idsList);
 
-                          if (idsList.length > 0) {
-                            Map<String, dynamic> s = filters.value ?? Map();
-                            s["brands"] = jsonEncode(idsList);
+                                filters.value = s;
+                              } else {
+                                filters.value?.remove('brands');
+                              }
 
-                            filters.value = s;
-                          }
-                          else {
-                            filters.value?.remove('brands');
-                          }
+                              if (filters.value != null) {
+                                if (filters.value!.isEmpty)
+                                  filters.value = null;
+                              }
 
-                          if (filters.value != null) {
-                            if (filters.value!.isEmpty)
-                              filters.value = null;
-                          }
-
-                          _pagingController.refresh();
-
-                        },);
-                      }
+                              _pagingController.refresh();
+                            },
+                          );
+                    },
                   ),
 
-
-
-
                   /**********************************************************************/
-
                 ],
               ),
             ),
-
-
-
 
             SliverPadding(
               padding: EdgeInsets.all(20),
               sliver: PagingListener(
                 controller: _pagingController,
-                builder: (context, state, fetchNext) => PagedSliverGrid<int, DealProductModel>(
-                  // Provide state and fetch logic from your controller
-                  state: _pagingController.value,
-                  fetchNextPage: _pagingController.fetchNextPage,
+                builder:
+                    (context, state, fetchNext) =>
+                        PagedSliverGrid<int, DealProductModel>(
+                          // Provide state and fetch logic from your controller
+                          state: _pagingController.value,
+                          fetchNextPage: _pagingController.fetchNextPage,
 
-                  // Define your grid layout (e.g., 2 columns)
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: .55,
-                  ),
+                          // Define your grid layout (e.g., 2 columns)
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                childAspectRatio: .66,
+                              ),
 
-                  // Build your grid tiles
-                  builderDelegate: PagedChildBuilderDelegate<DealProductModel>(
-                    itemBuilder: (context, item, index) => pushUpAnimation(InkWell(
-                        onTap: (){
-                          Get.to(DealDetails(dealModel: item));
-                        },
-                        child: SingleItemShoppingGrid(dealProductModel: item, onFavouriteClicked: () {
+                          // Build your grid tiles
+                          builderDelegate:
+                              PagedChildBuilderDelegate<DealProductModel>(
+                                itemBuilder:
+                                    (context, item, index) => pushUpAnimation(
+                                      InkWell(
+                                        onTap: () {
+                                          Get.to(DealDetails(dealModel: item));
+                                        },
+                                        // child: SingleItemShoppingGrid(
+                                        //   dealProductModel: item,
+                                        //   onFavouriteClicked: () {
+                                        //     _homePageController.addDeleteFav({
+                                        //       "retail_listing_id": item.id,
+                                        //     });
+                                        //   },
+                                        // ),
+                                        child:
+                                         Card(
+                                        elevation: 0.1,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                          side: BorderSide(
+                                              color: HexColor.fromHex("#F3F3F4"),
+                                              width: 0.5
+                                          ),
+                                        ),
+                                        child: Container(
+                                          padding: EdgeInsets.all(12),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Stack(
+                                                children: [
+                                                  ImageColorBuilder(
+                                                    url: "$baseUrlImage/${item.product.productPictures.first.picture}",
+                                                    fit: BoxFit.cover,
+                                                    placeholder: (c,s) {
+                                                      return Container(
+                                                        height: 132,
+                                                        decoration: BoxDecoration(
+                                                          color: HexColor.fromHex("#F4F4F4"),
+                                                          borderRadius: BorderRadius.circular(20),
+                                                         // border: Border.all(color: HexColor.fromHex(AppTheme.borderGrey)),
+                                                        ),
+                                                      );
+                                                    },
+                                                    builder: (c, image, color) {
+                                                      return Container(
+                                                        height: 132,
 
-                          _homePageController.addDeleteFav({
-                            "retail_listing_id":item.id,
-                          });
+
+                                                        decoration: BoxDecoration(
+                                                          color: color,
+                                                          borderRadius: BorderRadius.circular(20),
+                                                          border: Border.all(color: HexColor.fromHex("#F4F4F4")),
+                                                        ),
+                                                        child: ClipRRect(
+                                                          borderRadius: BorderRadius.circular(20),
+
+                                                          child: Center(child: image),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                  Positioned(
+                                                    top: 10,
+                                                    right: 10,
+                                                    child: InkWell(
+                                                      onTap: (){
+                                                        buildRemoveFavourite(index,item);
+                                                      },
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          shape: BoxShape.circle,
+                                                        ),
+                                                        padding: EdgeInsets.all(8),
+                                                        child: SvgPicture.asset(
+                                                          "assets/icons/fav.svg",
+                                                          width: 15,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
 
 
 
+                                              SizedBox(height: 10,),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Text(item.retailPrice,style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: HexColor.fromHex(AppTheme.primaryColor),
+                                                    ),),
+                                                    SizedBox(width: 5),
+                                                    SvgPicture.asset(
+                                                      "assets/icons/sar.svg",
+                                                      width: 15,
+                                                      height: 15,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(height: 5,),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                                child: Row(
+                                                  children: [
 
+                                                    StarRating(
+                                                      rating: 1,
+                                                      starCount: 1,
+                                                      color: HexColor.fromHex("#FFC120"),
+                                                    ),
+                                                    SizedBox(width: 5,),
+                                                    Text(item.product.avgRate.toString() ,style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.w800,
+                                                      color: HexColor.fromHex("#1E1D33"),
+                                                    ),),
+                                                  ],
+                                                ),
+                                              ),
 
-                        },))),
-                    noItemsFoundIndicatorBuilder: (context) => Center(
-                      child: Text(
-                        "noItemFound".tr
-                      ),
-                    )
-                  ),
-                ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                                child:     Text(item.product.name,maxLines :1 ,
+                                                  overflow: TextOverflow.ellipsis,style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 0.3,
+                                                    color: HexColor.fromHex("#1E1D33"),
+                                                  ),),
+                                              ),
+
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      ),
+                                    ),
+                                noItemsFoundIndicatorBuilder:
+                                    (context) =>
+                                        Center(child: Text("noItemFound".tr)),
+                              ),
+                        ),
               ),
             ),
-
-
-
-
           ],
-
         ),
       ),
-
-
-
     );
   }
 
@@ -370,7 +488,9 @@ class _HomePageState extends State<HomePage> {
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
                                 errorBorder: InputBorder.none,
-                              ).applyDefaults(Theme.of(context).inputDecorationTheme),
+                              ).applyDefaults(
+                                Theme.of(context).inputDecorationTheme,
+                              ),
                             ),
                           ),
                         ),
@@ -394,7 +514,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(width: 10),
                 ValueListenableBuilder(
                   valueListenable: filters,
-                  builder: (context,f,_) {
+                  builder: (context, f, _) {
                     return GestureDetector(
                       onTapDown: (details) {
                         // This will be used for the tap effect
@@ -406,34 +526,27 @@ class _HomePageState extends State<HomePage> {
                           showDragHandle: true,
                           isScrollControlled: true,
                           constraints: BoxConstraints(
-                            maxHeight: MediaQuery
-                                .of(context)
-                                .size
-                                .height * 0.9,
+                            maxHeight: MediaQuery.of(context).size.height * 0.9,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                           context: context,
                           builder: (context) {
-                            return Filters(itemsCategory: categories, onFilter: (Map<String, dynamic>? f) {
+                            return Filters(
+                              itemsCategory: categories,
+                              onFilter: (Map<String, dynamic>? f) {
+                                if (filters.value != null) {
+                                  if (filters.value!.isEmpty)
+                                    filters.value = null;
+                                }
 
+                                filters.value = f;
+                                _pagingController.refresh();
 
-
-
-                              if (filters.value != null) {
-                                if (filters.value!.isEmpty)
-                                  filters.value = null;
-                              }
-
-                              filters.value = f;
-                              _pagingController.refresh();
-
-                              setState(() {
-
-                              });
-
-                            },);
+                                setState(() {});
+                              },
+                            );
                           },
                         );
                       },
@@ -443,65 +556,85 @@ class _HomePageState extends State<HomePage> {
                         builder: (context, value, child) {
                           return Transform.scale(
                             scale: 1.0 + (value * 0.1),
-                            child:f != null ? Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-                              decoration: BoxDecoration(
-                                color: HexColor.fromHex(AppTheme.primaryColor),
-                                borderRadius: BorderRadius.circular(30),
-                                border: Border.all(
-                                  color: HexColor.fromHex(AppTheme.borderGrey),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: HexColor.fromHex(
-                                      AppTheme.primaryColor,
-                                    ).withOpacity(0.2 * (1 - value)),
-                                    spreadRadius: 2 * (1 - value),
-                                    blurRadius: 6 * (1 - value),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "${"reset_filters".tr}",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyLarge?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
+                            child:
+                                f != null
+                                    ? Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 15,
+                                        vertical: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: HexColor.fromHex(
+                                          AppTheme.primaryColor,
+                                        ),
+                                        borderRadius: BorderRadius.circular(30),
+                                        border: Border.all(
+                                          color: HexColor.fromHex(
+                                            AppTheme.borderGrey,
+                                          ),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: HexColor.fromHex(
+                                              AppTheme.primaryColor,
+                                            ).withOpacity(0.2 * (1 - value)),
+                                            spreadRadius: 2 * (1 - value),
+                                            blurRadius: 6 * (1 - value),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "${"reset_filters".tr}",
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          SvgPicture.asset(
+                                            "assets/icons/filters.svg",
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                    : Container(
+                                      padding: EdgeInsets.all(15),
+                                      decoration: BoxDecoration(
+                                        color: HexColor.fromHex(
+                                          AppTheme.filledBox,
+                                        ),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: HexColor.fromHex(
+                                            AppTheme.borderGrey,
+                                          ),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: HexColor.fromHex(
+                                              AppTheme.primaryColor,
+                                            ).withOpacity(0.2 * (1 - value)),
+                                            spreadRadius: 2 * (1 - value),
+                                            blurRadius: 6 * (1 - value),
+                                          ),
+                                        ],
+                                      ),
+                                      child: SvgPicture.asset(
+                                        "assets/icons/filters.svg",
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  SvgPicture.asset("assets/icons/filters.svg",color: Colors.white,),
-                                ],
-                              ),
-                            ):Container(
-                              padding: EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                color: HexColor.fromHex(AppTheme.filledBox),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: HexColor.fromHex(AppTheme.borderGrey),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: HexColor.fromHex(
-                                      AppTheme.primaryColor,
-                                    ).withOpacity(0.2 * (1 - value)),
-                                    spreadRadius: 2 * (1 - value),
-                                    blurRadius: 6 * (1 - value),
-                                  ),
-                                ],
-                              ),
-                              child: SvgPicture.asset("assets/icons/filters.svg"),
-                            ),
                           );
                         },
                       ),
                     );
-                  }
+                  },
                 ),
               ],
             ),
@@ -510,8 +643,70 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+  void buildRemoveFavourite(int index, DealProductModel item) {
+    final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
+
+    Get.defaultDialog(
+      backgroundColor: HexColor.fromHex("#F3F3F4"),
+
+      titlePadding: EdgeInsets.zero,
+      title: "",
+      content: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+
+            SvgPicture.asset(
+              "assets/icons/remove_fav.svg",
+              width: 50,
+              height: 50,
+            ),
+            SizedBox(height: 30,),
+            Text("are_you_sure_you_want_to_remove_this_favourite".tr,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: HexColor.fromHex(AppTheme.primaryColor),
+              ),),
+            SizedBox(height: 40,),
+            ValueListenableBuilder(
+                valueListenable: isLoading,
+                builder: (context,v,child) {
+                  return v ? Center(child: getLoader(),) : ElevatedButton(
+                    onPressed: () async{
+                      isLoading.value = true;
+
+                      try{
+                        await _homePageController.addDeleteFav({
+                          "retail_listing_id":item.id,
+                        });
+                        isLoading.value = false;
+                        Get.back();
+                        // setState(() {
+                        //   item.removeAt(index);
+                        // });
+                      }catch(e){
+                        isLoading.value = false;
+                        Get.snackbar("error".tr, e.toString());
+                      }
+
+                    },
+                    child: Text("yes_remove".tr),
+                  );
+                }
+            ),
+            SizedBox(height: 20,),
+            ElevatedButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: Text("no_keep".tr),
+              style: AppTheme.outlinedButtonStyle,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
-
-
-
-
