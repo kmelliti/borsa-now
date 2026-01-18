@@ -229,11 +229,13 @@
 
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
+
 List<DealProductModel> dealProductModelFromJson(String str) => List<DealProductModel>.from(json.decode(str).map((x) => DealProductModel.fromJson(x)));
 
 String dealProductModelToJson(List<DealProductModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class DealProductModel {
+class DealProductModel extends Equatable {
   int id;
   int inventoryLotId;
   int productId;
@@ -248,7 +250,7 @@ class DealProductModel {
   DateTime updatedAt;
   bool isFavorite;
   Product product;
-  int cartQuantity = 1;
+  int cartQuantity ;
 
   DealProductModel({
     required this.id,
@@ -265,6 +267,7 @@ class DealProductModel {
     required this.updatedAt,
     required this.isFavorite,
     required this.product,
+    required this.cartQuantity,
   });
 
   factory DealProductModel.fromJson(Map<String, dynamic> json) => DealProductModel(
@@ -282,6 +285,7 @@ class DealProductModel {
     updatedAt: DateTime.parse(json["updated_at"]),
     isFavorite: json["is_favorite"],
     product: Product.fromJson(json["product"]),
+    cartQuantity: json.containsKey("cart_quantity")?json["cart_quantity"]:1,
   );
 
   Map<String, dynamic> toJson() => {
@@ -299,7 +303,12 @@ class DealProductModel {
     "updated_at": updatedAt.toIso8601String(),
     "is_favorite": isFavorite,
     "product": product.toJson(),
+    "cart_quantity": cartQuantity,
   };
+
+  @override
+
+  List<Object?> get props => [id];
 }
 
 class Product {

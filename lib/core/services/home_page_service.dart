@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:borsa_now_bis/core/config/utils.dart';
@@ -9,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../screens/home_page/data/models/deal_product_model.dart';
 import '../exception/api_exception.dart';
+import '../models/order_submitted_model.dart';
 
 class HomePageService {
   final Dio _dio;
@@ -157,32 +159,29 @@ class HomePageService {
     }
   }
 
-  Future addCartProducts(List<DealProductModel> products) async {
+  Future<OrderSubmittedModel> submitOrder(List<DealProductModel> products) async {
 
-    List items = [];
-    products.forEach((elem) {
-      Map m = Map();
-      m["retail_listing_id"] = elem.id;
-      m["quantity"] = elem.cartQuantity;
-      items.add(m);
-    }
-    );
+
 
     try {
 
       final response = await _dio.post("/BorsaNow/public/api/v1/customer/order/add/${getLang()}",data: {
-        "items": items,
+        "items": products.map((e) => {
+          "retail_listing_id": e.id,
+          "quantity": e.cartQuantity,
+        }).toList(),
         "discount_code": "",
         "payment_method": "cod"
       });
 
+      print("Response of purchase ${response.data}");
 
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
       }
 
 
-      return true;
+      return orderSubmittedModelFromJson(jsonEncode(response.data['data']));
 
     } catch (e, s) {
       log("$e $s");

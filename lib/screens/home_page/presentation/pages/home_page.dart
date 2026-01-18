@@ -26,6 +26,7 @@ import '../../../../core/widgets/filters.dart';
 import '../widgets/brands_widget.dart';
 import '../widgets/categories_widget.dart';
 import '../widgets/deal_details.dart';
+import '../widgets/list_related_deals.dart';
 import '../widgets/promos_widget.dart';
 import '../widgets/single_item_shopping_list.dart';
 
@@ -103,10 +104,10 @@ class _HomePageState extends State<HomePage> {
         _pagingController.refresh();
       }),
 
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -260,21 +261,23 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
 
-                  /**********************************************************************/
+
                 ],
               ),
             ),
 
-            SliverPadding(
+            Padding(
               padding: EdgeInsets.all(20),
-              sliver: PagingListener(
+              child: PagingListener(
                 controller: _pagingController,
                 builder:
                     (context, state, fetchNext) =>
-                        PagedSliverGrid<int, DealProductModel>(
+                        PagedGridView<int, DealProductModel>(
                           // Provide state and fetch logic from your controller
                           state: _pagingController.value,
                           fetchNextPage: _pagingController.fetchNextPage,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
 
                           // Define your grid layout (e.g., 2 columns)
                           gridDelegate:
@@ -292,25 +295,15 @@ class _HomePageState extends State<HomePage> {
                                     (context, item, index) => pushUpAnimation(
                                       InkWell(
                                         onTap: () {
-                                          Get.to(DealDetails(dealModel: item));
+                                          Get.to(()=>DealDetails(dealModel: item));
                                         },
-                                        // child: SingleItemShoppingGrid(
-                                        //   dealProductModel: item,
-                                        //   onFavouriteClicked: () {
-                                        //     _homePageController.addDeleteFav({
-                                        //       "retail_listing_id": item.id,
-                                        //     });
-                                        //   },
-                                        // ),
+
                                         child:
                                          Card(
                                         elevation: 0.1,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(20),
-                                          side: BorderSide(
-                                              color: HexColor.fromHex("#F3F3F4"),
-                                              width: 0.5
-                                          ),
+
                                         ),
                                         child: Container(
                                           padding: EdgeInsets.all(12),
@@ -354,8 +347,20 @@ class _HomePageState extends State<HomePage> {
                                                     top: 10,
                                                     right: 10,
                                                     child: InkWell(
-                                                      onTap: (){
-                                                        buildRemoveFavourite(index,item);
+                                                      onTap: ()async{
+                                                        if(item.isFavorite){
+                                                          buildRemoveFavourite(context,item,(){
+                                                            _pagingController.refresh();
+                                                          });
+
+                                                        }else{
+                                                          await _homePageController.addDeleteFav({
+                                                            "retail_listing_id":item.id,
+                                                          });
+                                                           _pagingController.refresh();
+                                                        }
+
+
                                                       },
                                                       child: Container(
                                                         decoration: BoxDecoration(
@@ -363,10 +368,10 @@ class _HomePageState extends State<HomePage> {
                                                           shape: BoxShape.circle,
                                                         ),
                                                         padding: EdgeInsets.all(8),
-                                                        child: SvgPicture.asset(
+                                                        child: item.isFavorite ? SvgPicture.asset(
                                                           "assets/icons/fav.svg",
                                                           width: 15,
-                                                        ),
+                                                        ) : Icon(Icons.favorite_border,size: 15,color: HexColor.fromHex(AppTheme.textFieldBorder),),
                                                       ),
                                                     ),
                                                   )
@@ -438,6 +443,12 @@ class _HomePageState extends State<HomePage> {
                               ),
                         ),
               ),
+            ),
+            SizedBox(height: 10),
+            RelatedDeals(
+              type: RelatedDealsType.list, onSelected: (DealProductModel dealModel) {
+                Get.to(()=>DealDetails(dealModel: dealModel));
+            },
             ),
           ],
         ),
@@ -643,70 +654,5 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-  void buildRemoveFavourite(int index, DealProductModel item) {
-    final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
 
-    Get.defaultDialog(
-      backgroundColor: HexColor.fromHex("#F3F3F4"),
-
-      titlePadding: EdgeInsets.zero,
-      title: "",
-      content: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-
-            SvgPicture.asset(
-              "assets/icons/remove_fav.svg",
-              width: 50,
-              height: 50,
-            ),
-            SizedBox(height: 30,),
-            Text("are_you_sure_you_want_to_remove_this_favourite".tr,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: HexColor.fromHex(AppTheme.primaryColor),
-              ),),
-            SizedBox(height: 40,),
-            ValueListenableBuilder(
-                valueListenable: isLoading,
-                builder: (context,v,child) {
-                  return v ? Center(child: getLoader(),) : ElevatedButton(
-                    onPressed: () async{
-                      isLoading.value = true;
-
-                      try{
-                        await _homePageController.addDeleteFav({
-                          "retail_listing_id":item.id,
-                        });
-                        isLoading.value = false;
-                        Get.back();
-                        // setState(() {
-                        //   item.removeAt(index);
-                        // });
-                      }catch(e){
-                        isLoading.value = false;
-                        Get.snackbar("error".tr, e.toString());
-                      }
-
-                    },
-                    child: Text("yes_remove".tr),
-                  );
-                }
-            ),
-            SizedBox(height: 20,),
-            ElevatedButton(
-              onPressed: () {
-                Get.back();
-              },
-              child: Text("no_keep".tr),
-              style: AppTheme.outlinedButtonStyle,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

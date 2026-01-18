@@ -1,6 +1,7 @@
 import 'package:borsa_now_bis/core/config/utils.dart';
 import 'package:borsa_now_bis/core/di/di.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
+import 'package:borsa_now_bis/screens/cart/pages/payment_result.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ class CartPayment extends StatefulWidget {
 class _CartPaymentState extends State<CartPayment> {
 
   final HomePageController _controller = getIt();
+
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,8 @@ class _CartPaymentState extends State<CartPayment> {
 
                     print("${_controller.cartProducts.value}");
 
-                    _controller.addCartProducts(_controller.cartProducts.value);
+                    Get.off(()=>PaymentResult(),arguments: _controller.cartProducts.value);
+
                   },
                   title: Text("استخدم رصيد المحفظة", style:
                   TextStyle(

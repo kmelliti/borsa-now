@@ -15,8 +15,8 @@ class BrandModel {
   String? taxCertificate;
   String? copyTradeLicense;
   String? linkTiktok;
-  String linkInstagram;
-  String linkFacebook;
+  String? linkInstagram;
+  String? linkFacebook;
   String? linkX;
   int isActive;
   int isDeleted;

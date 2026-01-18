@@ -12,6 +12,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../../screens/home_page/data/models/deal_product_model.dart';
 import '../di/di.dart';
 import '../exception/api_exception.dart';
 import '../models/lookup_model.dart';
@@ -61,8 +62,77 @@ void handleException(BuildContext context, Object e) {
     showErrorDialog(context, null);
   }
 }
+void buildRemoveFavourite(BuildContext context, DealProductModel item,Function() onRemove) {
+  final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
+  final HomePageController _homePageController = getIt<HomePageController>();
 
-Widget getDiscountedPriceInText(double price) {
+  Get.defaultDialog(
+    backgroundColor: HexColor.fromHex("#F3F3F4"),
+
+    titlePadding: EdgeInsets.zero,
+    title: "",
+    content: Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+
+          SvgPicture.asset(
+            "assets/icons/remove_fav.svg",
+            width: 50,
+            height: 50,
+          ),
+          SizedBox(height: 30,),
+          Text("are_you_sure_you_want_to_remove_this_favourite".tr,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.displayLarge?.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: HexColor.fromHex(AppTheme.primaryColor),
+            ),),
+          SizedBox(height: 40,),
+          ValueListenableBuilder(
+              valueListenable: isLoading,
+              builder: (context,v,child) {
+                return v ? Center(child: getLoader(),) : ElevatedButton(
+                  onPressed: () async{
+                    isLoading.value = true;
+
+                    try{
+                      await _homePageController.addDeleteFav({
+                        "retail_listing_id":item.id,
+                      });
+                      isLoading.value = false;
+                      Get.back();
+                      onRemove();
+                      // setState(() {
+                      //   item.removeAt(index);
+                      // });
+                    }catch(e){
+                      isLoading.value = false;
+                      Get.snackbar("error".tr, e.toString());
+                    }
+
+                  },
+                  child: Text("yes_remove".tr),
+                );
+              }
+          ),
+          SizedBox(height: 20,),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text("no_keep".tr),
+            style: AppTheme.outlinedButtonStyle,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+Widget getDiscountedPriceInText(double price, BuildContext context) {
   return Stack(
     children: [
       Row(
@@ -71,18 +141,18 @@ Widget getDiscountedPriceInText(double price) {
           Text(
             price.toStringAsFixed(2),
 
-            style: TextStyle(
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
               fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: HexColor.fromHex(AppTheme.borderGrey),
-              letterSpacing: 0.2,
+              fontWeight: FontWeight.w300,
+              color: HexColor.fromHex(AppTheme.textFieldBorder),
+
             ),
           ),
           SizedBox(width: 5),
           SvgPicture.asset(
             "assets/icons/sar.svg",
             width: 20,
-            color: HexColor.fromHex(AppTheme.borderGrey),
+            color: HexColor.fromHex(AppTheme.textFieldBorder),
           ),
         ],
       ),
@@ -524,7 +594,7 @@ AppBar buildAppBar(
               },
             ),
     actions: [
-      TweenAnimationBuilder<double>(
+      true ? Container() : TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: 1.0),
         duration: Duration(milliseconds: 300),
         curve: Curves.easeOutBack,
@@ -670,7 +740,7 @@ AppBar buildAppBar(
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
-                            Get.to(CartPage());
+                            Get.to(()=>CartPage());
                           },
                           borderRadius: BorderRadius.circular(30),
                           child: Stack(

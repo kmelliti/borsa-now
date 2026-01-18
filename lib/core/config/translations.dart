@@ -247,6 +247,13 @@ class AppTranslation extends Translations {
       "categories":"الفئات",
       "brands":"التجار الرائجون",
       "noItemFound":"لا يوجد منتجات",
+      "dont_miss_it":"لا تفوتها",
+      "ratings":"التقييمات",
+      "no_items_in_cart":"لا يوجد منتجات في السلة",
+      "payment_success":"تم الدفع بنجاح",
+      "payment_success_sub":"تمت العملية بنجاح، يمكنك الآن متابعة طلبك أو العودة للصفحة الرئيسية.",
+      "follow_request":"تتبع الطلب",
+
 
     },
   };
