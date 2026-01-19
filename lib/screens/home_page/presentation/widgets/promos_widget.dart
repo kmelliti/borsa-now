@@ -47,7 +47,7 @@ class PromosWidget extends StatelessWidget {
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                     onTap: (){
-                      Get.to(DealDetails(dealId: promos[index].id));
+                      Get.to(()=>DealDetails(dealId: promos[index].id));
                     },
                     child: Container(
                       width: 242,

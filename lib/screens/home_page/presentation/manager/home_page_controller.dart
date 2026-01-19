@@ -1,3 +1,4 @@
+import 'package:borsa_now_bis/core/config/app_constants.dart';
 import 'package:borsa_now_bis/core/di/di.dart';
 import 'package:borsa_now_bis/core/models/lookup_model.dart';
 import 'package:borsa_now_bis/core/services/app_service.dart';
@@ -7,7 +8,9 @@ import 'package:borsa_now_bis/screens/home_page/data/models/brand_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:borsa_now_bis/core/models/product_model.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/models/order_submitted_model.dart';
 import '../../data/models/deal_product_model.dart';
 import '../../data/models/review_response_model.dart';
 
@@ -18,10 +21,10 @@ class HomePageController {
   final HomePageService _homePageService;
   // ValueNotifier<List<p.ProductModel>> cartProducts = ValueNotifier([]);
   ValueNotifier<List<DealProductModel>> cartProducts = ValueNotifier([]);
-  
-  
 
-  HomePageController(this._homePageService);
+  final SharedPreferences prefs ;
+
+  HomePageController(this._homePageService, this.prefs);
 
   Future<List<DealProductModel>> getDealProducts(int pageKey, Map<String, dynamic>? value) async {
 
@@ -64,35 +67,68 @@ class HomePageController {
     return await _homePageService.addDeleteFav( params);
   }
   
-  void addCartProduct(DealProductModel product) async {
 
-
-    List<DealProductModel> products = cartProducts.value;
-
-    bool found = false;
-
-    for (int i = 0; i < products.length; i++) {
-      if (products[i].id == product.id) {
-        products[i].cartQuantity++;
-        found = true;
-        break;
-      }
-    };
-
-    if (!found)
-      products.add(product);
-
-    cartProducts.value = [...products];
-  }
-
-  void removeCartProducts(DealProductModel product) {
-    List<DealProductModel> products = cartProducts.value;
+  void removeCartProduct(DealProductModel product) {
+    List<DealProductModel> products = [];
+    if(prefs.getString(cart) != null){
+      products  = dealProductModelFromJson(prefs.getString(cart)!) ;
+    }
     products.remove(product);
     cartProducts.value = [...products];
+    prefs.setString(cart, dealProductModelToJson(cartProducts.value));
+
+  }
+  void reduceProductQuantity(DealProductModel product){
+    List<DealProductModel> products = [];
+    if(prefs.getString(cart) != null){
+      products  = dealProductModelFromJson(prefs.getString(cart)!) ;
+    }
+    DealProductModel p = products.firstWhere((element) => element.id == product.id);
+    if(p.cartQuantity == 1){
+      removeCartProduct(p);
+    }else{
+      p.cartQuantity--;
+      products[products.indexWhere((element) => element.id == product.id)] = p;
+
+    }
+    cartProducts.value = [...products];
+    prefs.setString(cart, dealProductModelToJson(cartProducts.value));
+
+  }
+  void addProductToCart(DealProductModel product) {
+
+    List<DealProductModel> products = [];
+    if(prefs.getString(cart) != null){
+      products  = dealProductModelFromJson(prefs.getString(cart)!) ;
+    }
+    if(products.contains(product)){
+      int oldProduct = products.indexWhere((element) => element.id == product.id);
+      DealProductModel d = products.elementAt(oldProduct);
+      d.cartQuantity++;
+      products[oldProduct] = d;
+
+    }else{
+      products.add(product);
+    }
+
+    cartProducts.value = [...products];
+
+    prefs.setString(cart, dealProductModelToJson(cartProducts.value));
   }
 
-  void addCartProducts(List<DealProductModel> products) async {
-    return await _homePageService.addCartProducts(products);
+  void fetchCartProducts() {
+
+
+    List<DealProductModel> products = [];
+    if(prefs.getString(cart) != null){
+      products  = dealProductModelFromJson(prefs.getString(cart)!) ;
+    }
+    cartProducts.value = [...products];
+  }
+
+  Future<OrderSubmittedModel> submitOrder(List<DealProductModel> products) async {
+
+    return await _homePageService.submitOrder(products);
 
   }
 }

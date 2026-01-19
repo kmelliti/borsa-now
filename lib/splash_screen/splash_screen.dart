@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:borsa_now_bis/core/di/di.dart';
 
 import '../core/services/app_service.dart';
+import '../screens/home_page/presentation/manager/home_page_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({super.key});
@@ -16,10 +17,11 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final AppServices appServices = getIt();
+  final HomePageController _controller = getIt();
 
   @override
   void initState() {
-    // TODO: implement initState
+
     super.initState();
     try {
       // appServices.getCities();
@@ -27,6 +29,8 @@ class _SplashScreenState extends State<SplashScreen> {
     } catch (e, s) {
       log("$e , $s");
     }
+
+    _controller.fetchCartProducts();
     log("Prentable token ${appServices.getToken()}");
 
     bool isLoggedIn = appServices.getToken() != null;

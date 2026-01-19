@@ -128,6 +128,7 @@ flutter:
     - assets/icons/check_green.svg
     - assets/icons/alert_rect.svg
     - assets/icons/remove_fav.svg
+    - assets/icons/payment_success.svg
     - assets/icons/
     - assets/
 

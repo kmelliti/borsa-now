@@ -38,7 +38,7 @@ Future<void> setup() async {
 
   getIt.registerLazySingleton(()=>AppServices(getIt(),getIt()));
   getIt.registerLazySingleton(()=>HomePageService(getIt()));
-  getIt.registerLazySingleton(()=>HomePageController(getIt()));
+  getIt.registerLazySingleton(()=>HomePageController(getIt(),getIt()));
   getIt.registerLazySingleton(()=>MyAccountServices(getIt(),getIt()));
   getIt.registerLazySingleton(()=>MyAccountController(getIt()));
   getIt.registerLazySingleton(()=>MyFavouriteService(getIt()));
