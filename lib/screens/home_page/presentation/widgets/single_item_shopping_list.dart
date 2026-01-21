@@ -170,7 +170,7 @@ class SingleItemYouMayLikeList extends StatelessWidget {
                 });
 
               }else{
-                await _homePageController.addDeleteFav({
+                 _homePageController.addDeleteFav({
                   "retail_listing_id":dealProductModel.id,
                 });
                 dealProductModel.isFavorite = true;

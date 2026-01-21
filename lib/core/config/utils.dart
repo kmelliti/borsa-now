@@ -98,7 +98,8 @@ void buildRemoveFavourite(BuildContext context, DealProductModel item,Function()
                     isLoading.value = true;
 
                     try{
-                      await _homePageController.addDeleteFav({
+
+                       _homePageController.addDeleteFav({
                         "retail_listing_id":item.id,
                       });
                       isLoading.value = false;
@@ -206,7 +207,10 @@ bool isValidSaudiPhone(String phone) {
 }
 
 Widget noItemFound(BuildContext c) {
-  return Center(child: Text("no_item_found".tr));
+  return Padding(
+    padding: const EdgeInsets.all(30.0),
+    child: Center(child: Text("no_item_found".tr)),
+  );
 }
 
 Widget dateSelector(
@@ -511,6 +515,7 @@ void showLogoutAlert(BuildContext context) {
               onPressed: () {
                 AuthService authService = getIt();
                 authService.signOut();
+                indexWidget.value = 2;
                 Get.offAllNamed(AppRoutes.login);
               },
               child: Text(

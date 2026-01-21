@@ -354,7 +354,7 @@ class _HomePageState extends State<HomePage> {
                                                           });
 
                                                         }else{
-                                                          await _homePageController.addDeleteFav({
+                                                           _homePageController.addDeleteFav({
                                                             "retail_listing_id":item.id,
                                                           });
                                                            _pagingController.refresh();

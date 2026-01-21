@@ -102,7 +102,7 @@ class _ReviewListState extends State<ReviewList> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: HexColor.fromHex(AppTheme.borderGrey)),
+        border: Border.all(color: HexColor.fromHex(AppTheme.borderGrey).withOpacity(0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,11 +110,16 @@ class _ReviewListState extends State<ReviewList> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: CircleAvatar(
+              radius: 25,
               backgroundImage: NetworkImage(
                 "$baseUrlImage/${review.user.picture}",
               ),
             ),
-            title: Text(review.user.name),
+            title: Text(review.user.name,style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: HexColor.fromHex('#1E1D33'),
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),),
             subtitle: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [StarRating(rating: review.rate.toDouble(), size: 20)],
@@ -126,12 +131,13 @@ class _ReviewListState extends State<ReviewList> {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Text(
             review.comment,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
               color: HexColor.fromHex('#1E1D33'),
               letterSpacing: 0.2,
+              fontWeight: FontWeight.w500
             ),
           ),
         ],
