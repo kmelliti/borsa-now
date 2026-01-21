@@ -190,7 +190,7 @@ class RelatedDeals extends StatelessWidget {
                                           });
 
                                         }else{
-                                          await _homePageController.addDeleteFav({
+                                           _homePageController.addDeleteFav({
                                             "retail_listing_id":item.id,
                                           });
 

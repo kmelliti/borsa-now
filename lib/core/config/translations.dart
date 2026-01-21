@@ -253,6 +253,7 @@ class AppTranslation extends Translations {
       "payment_success":"تم الدفع بنجاح",
       "payment_success_sub":"تمت العملية بنجاح، يمكنك الآن متابعة طلبك أو العودة للصفحة الرئيسية.",
       "follow_request":"تتبع الطلب",
+      "sar":"ريال"
 
 
     },

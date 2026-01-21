@@ -269,7 +269,7 @@ class _MyFavouritesState extends State<MyFavourites> {
                     isLoading.value = true;
 
                     try{
-                      await _homePageController.addDeleteFav({
+                       _homePageController.addDeleteFav({
                         "retail_listing_id":favs[index].id,
                       });
                       isLoading.value = false;

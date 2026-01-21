@@ -10,6 +10,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../widgets/address.dart';
 import '../widgets/bank_info.dart';
 import '../widgets/custom_tabIndicator.dart';
+import '../widgets/my_payments.dart';
 import '../widgets/password_page.dart';
 import '../widgets/personal_identity.dart';
 import 'personal_infos.dart';
@@ -122,7 +123,7 @@ class MyAccount extends StatelessWidget {
                         children: [
                           // LeaveDetailsOrder(),
                           getParams(context),
-                          Center(child: Text("المدفوعات".tr)),
+                          MyPayments(),
                           EditPersonalInformation(),
                         ],
                       ),
