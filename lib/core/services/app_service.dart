@@ -20,7 +20,7 @@ class AppServices {
 
     try {
       final response = await _dio.get(
-        'BorsaNow/public/api/v1/general/cities/${getLang()}',
+        'api/v1/general/cities/${getLang()}',
       );
       log("Response cities ${response.data}");
 
@@ -40,7 +40,7 @@ class AppServices {
 
     try {
       final response = await _dio.get(
-        'BorsaNow/public/api/v1/general/banks/${getLang()}',
+        'api/v1/general/banks/${getLang()}',
       );
 
 
@@ -55,11 +55,27 @@ class AppServices {
       throw Exception('Failed to load Banks: $e ,$s');
     }
   }
+
+  Future<void> setGpsPosition(String lng,String lat) async {
+
+    try {
+      final response = await _dio.post(
+        'api/v1/general/position/${getLang()}',data: {
+          "longitude":lng,
+        "latitude":lat
+      }
+      );
+
+      print("Response for GPS position ${response.data}");
+    } catch (e,s) {
+      log("$e $s");
+    }
+  }
   Future<List<LookUpModel>> getProductCategories() async {
 
     try {
       final response = await _dio.get(
-        'BorsaNow/public/api/v1/general/product/categories/${getLang()}',
+        'api/v1/general/product/categories/${getLang()}',
       );
 
 

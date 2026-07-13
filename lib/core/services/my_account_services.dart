@@ -23,7 +23,7 @@ class MyAccountServices {
         );
       }
       final response = await _dio.post(
-        "BorsaNow/public/api/v1/investor/information/update/${getLang()}",
+        "api/v1/investor/information/update/${getLang()}",
         data: formData,
       );
       print("Data ${response.data} ");
@@ -41,7 +41,7 @@ class MyAccountServices {
   Future<UserModel> updateAddress(Map<String, dynamic> params) async {
     try {
       final response = await _dio.put(
-        "BorsaNow/public/api/v1/investor/address/update/${getLang()}",
+        "api/v1/investor/address/update/${getLang()}",
         data: params,
       );
       print("Data ${response.data} ");
@@ -68,7 +68,7 @@ class MyAccountServices {
         );
       }
       final response = await _dio.post(
-        "BorsaNow/public/api/v1/investor/identification/update/${getLang()}",
+        "api/v1/investor/identification/update/${getLang()}",
         data: formData,
       );
       print("Data ${response.data} ");
@@ -88,7 +88,7 @@ class MyAccountServices {
   Future<UserModel> updateBank(Map<String, dynamic> params) async {
     try {
       final response = await _dio.post(
-        "BorsaNow/public/api/v1/investor/bank/update/${getLang()}",
+        "api/v1/investor/bank/update/${getLang()}",
         data: params,
       );
       print("Data ${response.data} ");
@@ -108,7 +108,7 @@ class MyAccountServices {
   Future<void> updatePassword(Map<String, dynamic> params) async {
     try {
       final response = await _dio.put(
-        "BorsaNow/public/api/v1/investor/password/change/${getLang()}",
+        "api/v1/investor/password/change/${getLang()}",
         data: params,
       );
       print("Data ${response.data} ");
@@ -120,16 +120,18 @@ class MyAccountServices {
       throw e;
     }
   }
-  Future<void> updatePersonalInformation(Map<String, dynamic> params) async {
+  Future<UserModel> updatePersonalInformation(Map<String, dynamic> params) async {
     try {
       final response = await _dio.put(
-        "/BorsaNow/public/api/v1/customer/information/update/${getLang()}",
+        "/api/v1/customer/information/update/${getLang()}",
         data: params,
       );
       print("Data ${response.data} ");
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
       }
+      UserModel user = UserModel.fromJson(response.data['data']);
+      return user;
 
     } catch (e,s) {
       print("ERrror $e ,$s");

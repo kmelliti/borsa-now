@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:borsa_now_bis/core/routes/app_routes.dart';
+import 'package:borsa_now_bis/core/services/app_service.dart';
 import 'package:borsa_now_bis/core/services/auth_services.dart';
 import 'package:borsa_now_bis/screens/cart/pages/cart_page.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
@@ -9,9 +10,12 @@ import 'package:borsa_now_bis/screens/notifications_page/presentation/pages/noti
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:palette_generator_master/palette_generator_master.dart';
 
+import '../../screens/favourite/models/favourite_model.dart';
 import '../../screens/home_page/data/models/deal_product_model.dart';
 import '../di/di.dart';
 import '../exception/api_exception.dart';
@@ -19,7 +23,9 @@ import '../models/lookup_model.dart';
 import '../theme/app_theme.dart';
 import 'app_constants.dart';
 
+
 String displayStringForOption(LookUpModel lookup) => lookup.name;
+List<int> myFavourites =[];
 
 // List of months with translations
 final List<String> monthList = [
@@ -132,6 +138,23 @@ void buildRemoveFavourite(BuildContext context, DealProductModel item,Function()
   );
 }
 
+Future<void> generatePalette() async {
+  // Load your image
+  final ImageProvider imageProvider = AssetImage('assets/my_image.jpg');
+
+  // Generate palette
+  final PaletteGeneratorMaster paletteGenerator =
+  await PaletteGeneratorMaster.fromImageProvider(
+    imageProvider,
+    maximumColorCount: 16,
+    colorSpace: ColorSpace.lab, // Use LAB color space for better accuracy
+    generateHarmony: true,      // Generate color harmony
+  );
+
+  // Access extracted colors
+  final Color? dominantColor = paletteGenerator.dominantColor?.color;
+
+}
 
 Widget getDiscountedPriceInText(double price, BuildContext context) {
   return Stack(
@@ -515,7 +538,7 @@ void showLogoutAlert(BuildContext context) {
               onPressed: () {
                 AuthService authService = getIt();
                 authService.signOut();
-                indexWidget.value = 2;
+                indexWidget.value = 0;
                 Get.offAllNamed(AppRoutes.login);
               },
               child: Text(
@@ -599,7 +622,7 @@ AppBar buildAppBar(
               },
             ),
     actions: [
-      true ? Container() : TweenAnimationBuilder<double>(
+      onSearchSubmitted== null ? Container() : TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: 1.0),
         duration: Duration(milliseconds: 300),
         curve: Curves.easeOutBack,
@@ -658,6 +681,7 @@ AppBar buildAppBar(
                                       onTap: () {
                                         searchController.text = "";
 
+                                        onSearchSubmitted("");
                                         widthSearchBox.value = 55;
                                       },
                                       child:
@@ -702,6 +726,7 @@ AppBar buildAppBar(
                             ),
                           InkWell(
                             onTap: () {
+                              print("Clicked");
                               if (indexWidget.value != 0) {
                                 return;
                               }
@@ -709,7 +734,7 @@ AppBar buildAppBar(
                                 if (searchController.text.isEmpty) {
                                   return;
                                 }
-                                onSearchSubmitted?.call(searchController.text);
+                                onSearchSubmitted.call(searchController.text);
                               } else {
                                 widthSearchBox.value = 250;
                               }
@@ -812,11 +837,36 @@ List<String> genderList = [
   "female"
 ];
 
-AppBar buildAppBar2() {
+Future<Position?> getApproxLocation() async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) return null;
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+
+  if (permission == LocationPermission.denied ||
+      permission == LocationPermission.deniedForever) {
+    return null;
+  }
+
+  Position pos = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.low, // 👈 IMPORTANT
+  );
+
+  AppServices appServices = getIt();
+  appServices.setGpsPosition(pos.longitude.toString(), pos.latitude.toString());
+  return pos;
+}
+
+AppBar buildAppBar2([String? title]) {
   return AppBar(
     backgroundColor: HexColor.fromHex(AppTheme.appBackGroundColor),
     elevation: 0,
     leadingWidth: 80,
+    title:title == null?null: Text(title,style: TextStyle(color: Colors.black)) ,
+    centerTitle: true,
     leading: TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 800),
@@ -850,46 +900,46 @@ AppBar buildAppBar2() {
       },
     ),
     actions: [
-      TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.0, end: 1.0),
-        duration: Duration(milliseconds: 600),
-        curve: Curves.easeOutBack,
-        builder: (context, value, child) {
-          return Transform.translate(
-            offset: Offset(0, (1 - value) * 20),
-            child: Opacity(
-              opacity: value.clamp(0.0, 1.0),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {},
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: HexColor.fromHex(AppTheme.borderGrey),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 5,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: SvgPicture.asset("assets/icons/search.svg"),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+      // TweenAnimationBuilder<double>(
+      //   tween: Tween(begin: 0.0, end: 1.0),
+      //   duration: Duration(milliseconds: 600),
+      //   curve: Curves.easeOutBack,
+      //   builder: (context, value, child) {
+      //     return Transform.translate(
+      //       offset: Offset(0, (1 - value) * 20),
+      //       child: Opacity(
+      //         opacity: value.clamp(0.0, 1.0),
+      //         child: Material(
+      //           color: Colors.transparent,
+      //           child: InkWell(
+      //             onTap: () {},
+      //             borderRadius: BorderRadius.circular(30),
+      //             child: Container(
+      //               width: 50,
+      //               height: 50,
+      //               padding: EdgeInsets.all(15),
+      //               decoration: BoxDecoration(
+      //                 color: Colors.white,
+      //                 shape: BoxShape.circle,
+      //                 border: Border.all(
+      //                   color: HexColor.fromHex(AppTheme.borderGrey),
+      //                 ),
+      //                 boxShadow: [
+      //                   BoxShadow(
+      //                     color: Colors.black.withOpacity(0.05),
+      //                     blurRadius: 5,
+      //                     offset: Offset(0, 2),
+      //                   ),
+      //                 ],
+      //               ),
+      //               child: SvgPicture.asset("assets/icons/search.svg"),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     );
+      //   },
+      // ),
       TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: 1.0),
         duration: Duration(milliseconds: 800),

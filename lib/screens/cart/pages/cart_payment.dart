@@ -6,8 +6,12 @@ import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_c
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../home_page/data/models/deal_product_model.dart';
+import '../widgets/pickup_address.dart';
+
 class CartPayment extends StatefulWidget {
-  const CartPayment({super.key});
+  const CartPayment({super.key, required this.isToClearCart});
+  final bool isToClearCart;
 
   @override
   State<CartPayment> createState() => _CartPaymentState();
@@ -16,6 +20,16 @@ class CartPayment extends StatefulWidget {
 class _CartPaymentState extends State<CartPayment> {
 
   final HomePageController _controller = getIt();
+  ValueNotifier<List<DealProductModel>> tempCard = ValueNotifier([]);
+
+  @override
+  void initState() {
+
+    if(Get.arguments != null){
+      tempCard.value = Get.arguments;
+    }
+    super.initState();
+  }
 
 
   @override
@@ -30,8 +44,10 @@ class _CartPaymentState extends State<CartPayment> {
             children: [
               buildTitle("payment".tr),
               SizedBox(height: 40,),
+              PickupAddress(cartProducts: tempCard.value,),
+              SizedBox(height: 20,),
               // Container(),
-              Text("استخدم رصيد المحفظة الآن"),
+              Text("use_borsa_credit".tr),
               SizedBox(height: 20,),
               Container(
                 decoration: BoxDecoration(
@@ -44,12 +60,34 @@ class _CartPaymentState extends State<CartPayment> {
                 child: ListTile(
                   onTap: () {
 
-                    print("${_controller.cartProducts.value}");
+                   if(_controller.cartProducts.value.length != _controller.items.length){
+                     showErrorDialog(context, "${"select_products_pickup".tr} ");
+                     return ;
+                   }
 
-                    Get.off(()=>PaymentResult(),arguments: _controller.cartProducts.value);
+                   bool passed = true;
+                   for(int i = 0 ; i < _controller.items.length ; i++){
+                     if(!_controller.items[i].containsKey("location_id")){
+                       showErrorDialog(context, "${"select_product_pickup".tr} ${_controller.cartProducts.value.firstWhere((e)=> e.id == _controller.items[i]['retail_listing_id']).product.name}");
+                       passed = false;
+                       break;
+
+                     }
+                   }
+
+                   if(!passed){
+                     return;
+                   }
+
+                   print("_controler locations ${_controller.items}");
+
+
+
+
+                    Get.off(()=>PaymentResult(isToClearCart: widget.isToClearCart, orderContent: _controller.cartProducts.value, items: _controller.items,) );
 
                   },
-                  title: Text("استخدم رصيد المحفظة", style:
+                  title: Text("use_credit".tr, style:
                   TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
@@ -73,22 +111,7 @@ class _CartPaymentState extends State<CartPayment> {
                   ),
                 ),
               ),
-              // ValueListenableBuilder(
-              //     valueListenable: _controller.cartProducts,
-              //     builder: (context,list,_) {
-              //
-              //       return AnimatedList(
-              //         key: _listKey,
-              //         initialItemCount: list.length,
-              //         physics: NeverScrollableScrollPhysics(),
-              //         shrinkWrap: true,
-              //         itemBuilder: (context, index, animation) {
-              //           return _buildItem(list[index], context, animation);
-              //         },
-              //       );
-              //
-              //     }
-              // )
+
             ],
           ),
         ),

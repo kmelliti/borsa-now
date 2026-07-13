@@ -5,6 +5,7 @@ import 'package:borsa_now_bis/screens/my_orders/my_orders_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/config/app_constants.dart';
 import '../../../core/di/di.dart';
@@ -122,8 +123,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                             ),
 
                             SizedBox(height: 40),
-                            keyValueRow(context, "track_id".tr, "IW3475453455"),
-                            SizedBox(height: 20),
+
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -157,7 +158,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                           ),
                         ),
                         child: Container(
-                          height: 260,
+                          height: 300,
                           padding: EdgeInsets.all(10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,6 +198,54 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 ),
                               ),
                               SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text(
+                                    "${"pickup_location".tr}: ",
+                                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                      color: HexColor.fromHex("#5B5B5B"),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                 e.location != null ? Flexible(
+                                   child: InkWell(
+                                     onTap: () async {
+                                        final googleMapsUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=${e.location?.latitude},${e.location?.latitude}');
+
+                                        if (await canLaunchUrl(googleMapsUrl)) {
+                                        await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
+                                        } else {
+                                        debugPrint('Could not open the map.');
+                                        }
+                                      },
+                                     child: Text(
+                                        "${e.location?.address}",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                          color: HexColor.fromHex(AppTheme.textColor),
+                                          decoration: TextDecoration.underline,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                   ),
+                                 ):Text(
+                                   "${"not_found".tr}",
+                                   maxLines: 1,
+                                   overflow: TextOverflow.ellipsis,
+                                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                     color: HexColor.fromHex(AppTheme.textColor),
+                                     decoration: TextDecoration.underline,
+                                     fontSize: 14,
+                                     fontWeight: FontWeight.w700,
+                                   ),
+                                 ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0,
@@ -204,7 +253,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 child: Row(
                                   children: [
                                     getPriceInText(
-                                      565.25,
+                                      double.parse(e.unitPrice),
                                       Theme.of(
                                         context,
                                       ).textTheme.displayLarge?.copyWith(
@@ -401,7 +450,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     );
   }
 
-  Row keyValueRow(BuildContext context, String key, String value) {
+  Widget keyValueRow(BuildContext context, String key, String value) {
     return Row(
       children: [
         Text(
@@ -415,6 +464,8 @@ class _OrderDetailsState extends State<OrderDetails> {
         SizedBox(width: 10),
         Text(
           "$value",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.displayLarge?.copyWith(
             color: HexColor.fromHex(AppTheme.textColor),
             fontSize: 14,

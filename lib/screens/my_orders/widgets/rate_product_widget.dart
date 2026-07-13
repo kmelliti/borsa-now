@@ -12,20 +12,32 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/di/di.dart';
 import '../../../../core/theme/app_theme.dart';
 
-class RateProductWidget extends StatelessWidget {
+class RateProductWidget extends StatefulWidget {
   RateProductWidget({super.key, required this.productId});
   final String productId;
 
-  final ValueNotifier<double> rate = ValueNotifier(5);
+  @override
+  State<RateProductWidget> createState() => _RateProductWidgetState();
+}
+
+class _RateProductWidgetState extends State<RateProductWidget> {
+  final ValueNotifier<double> rate = ValueNotifier(1);
+
   final ValueNotifier<bool> isLoading = ValueNotifier(false);
+
   final TextEditingController commentController = TextEditingController();
+
   final ImagePicker _picker = ImagePicker();
+
   final ValueNotifier<List<XFile?>> images = ValueNotifier([]);
+
   final HomePageController _homePageController = getIt();
 
   final  _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
+
     return Container(
       padding: EdgeInsets.all(20),
       child: Form(
@@ -68,6 +80,7 @@ class RateProductWidget extends StatelessWidget {
                       starCount: 5,
                       size: 35,
                       rating: value,
+
                       onRatingChanged: (newRate) {
                         rate.value = newRate;
                       },
@@ -96,6 +109,10 @@ class RateProductWidget extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      onTapOutside: (c){
+                        FocusManager.instance.primaryFocus?.unfocus();
+                      },
+
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "write_comment".tr;
@@ -174,7 +191,7 @@ class RateProductWidget extends StatelessWidget {
 
                       try{
                         review = await _homePageController.addReview(images.value.map((e) => e?.path).toList(), {
-                          "product_id":productId,
+                          "product_id":widget.productId,
                           "rate": rate.value,
                           "comment": commentController.text,
                         });

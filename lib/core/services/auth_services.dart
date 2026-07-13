@@ -27,7 +27,7 @@ class AuthService{
       }
 
       final response = await _dio.post(
-        'BorsaNow/public/api/v1/customer/register/${getLang()}',
+        'api/v1/customer/register/${getLang()}',
         data: formData,
       );
       print("Data ${response.data} ");
@@ -45,7 +45,7 @@ class AuthService{
   Future<UserModel> signIn(String email, String password) async {
     try {
       final response = await _dio.post(
-        'BorsaNow/public/api/v1/customer/login/${getLang()}',
+        'api/v1/customer/login/${getLang()}',
         data: FormData.fromMap({
           "email": email,
           "password": password,
@@ -53,7 +53,7 @@ class AuthService{
       );
       print("Data ${response.data} ");
       if(response.data["result"] == false){
-        throw Exception(response.data["message"]);
+        throw ApiException(response.data["message"]);
       }
 
       appServices.setToken(response.data["token"]);
@@ -72,7 +72,7 @@ class AuthService{
   Future<UserModel> getUser() async {
     try {
       final response = await _dio.get(
-        'BorsaNow/public/api/v1/customer/${getLang()}',
+        'api/v1/customer/${getLang()}',
         queryParameters: {
           "token":appServices.getToken()
         }
@@ -94,7 +94,7 @@ class AuthService{
   Future<void> signOut() async {
     try {
       final response = await _dio.get(
-        'BorsaNow/public/api/v1/customer/logout/${getLang()}',
+        'api/v1/customer/logout/${getLang()}',
       );
       print("Data ${response.data} ");
       if(response.data["result"] == false){
@@ -105,6 +105,39 @@ class AuthService{
     } catch (e) {
 
       throw e;
+    }
+  }
+
+  Future<void> resetPassword (Map<String,dynamic> params) async{
+
+    try{
+      final response = await _dio.post(
+          'api/v1/general/password/update/${getLang()}',
+          data: params
+      );
+      print("Data ${response.data} ");
+      if(response.data["result"] == false){
+        throw ApiException(response.data["message"]);
+      }
+      return;
+    }catch(e,s){
+      rethrow;
+    }
+  }
+  Future<String> sendCodeResetPassword (Map<String,dynamic> params) async{
+
+    try{
+      final response = await _dio.post(
+          'api/v1/general/password/code/${getLang()}',
+          data: params
+      );
+      print("Data ${response.data} ");
+      if(response.data["result"] == false){
+        throw ApiException(response.data["message"]);
+      }
+      return response.data["data"];
+    }catch(e,s){
+      rethrow;
     }
   }
 }

@@ -219,15 +219,12 @@
 //   };
 // }
 
-
-
-
-
 // To parse this JSON data, do
 //
 //     final dealProductModel = dealProductModelFromJson(jsonString);
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
 
@@ -250,7 +247,7 @@ class DealProductModel extends Equatable {
   DateTime updatedAt;
   bool isFavorite;
   Product product;
-  int cartQuantity ;
+  int cartQuantity;
 
   DealProductModel({
     required this.id,
@@ -285,7 +282,7 @@ class DealProductModel extends Equatable {
     updatedAt: DateTime.parse(json["updated_at"]),
     isFavorite: json["is_favorite"],
     product: Product.fromJson(json["product"]),
-    cartQuantity: json.containsKey("cart_quantity")?json["cart_quantity"]:1,
+    cartQuantity: json.containsKey("cart_quantity") ? json["cart_quantity"] : 1,
   );
 
   Map<String, dynamic> toJson() => {
@@ -307,7 +304,6 @@ class DealProductModel extends Equatable {
   };
 
   @override
-
   List<Object?> get props => [id];
 }
 
@@ -350,25 +346,34 @@ class Product {
     this.rates,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
-    id: json["id"],
-    merchantId: json["merchant_id"],
-    productCategorieId: json["product_categorie_id"],
-    sku: json["sku"],
-    name: json["name"],
-    description: json["description"],
-    costBasis: json["cost_basis"],
-    isDeleted: json["is_deleted"],
-    deletedAt: json["deleted_at"],
-    createdBy: json["created_by"],
-    updatedBy: json["updated_by"],
-    deletedBy: json["deleted_by"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    productPictures: List<ProductPicture>.from(json["product_pictures"].map((x) => ProductPicture.fromJson(x))),
-    rates: json["rates"] != null ? List<Rates>.from(json["rates"]?.map((x) => x)) : null,
-    avgRate: json["avg_rate"],
-  );
+  factory Product.fromJson(Map<String, dynamic> json) {
+    try {
+      return Product(
+        id: json["id"],
+        merchantId: json["merchant_id"],
+        productCategorieId: json["product_categorie_id"],
+        sku: json["sku"],
+        name: json["name"],
+        description: json["description"],
+        costBasis: json["cost_basis"],
+        isDeleted: json["is_deleted"],
+        deletedAt: json["deleted_at"],
+        createdBy: json["created_by"],
+        updatedBy: json["updated_by"],
+        deletedBy: json["deleted_by"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        productPictures: List<ProductPicture>.from(json["product_pictures"].map((x) => ProductPicture.fromJson(x))),
+        rates: List<Rates>.from(json["rates"]?.map((x) => Rates.fromJson(x))),
+        avgRate: json["avg_rate"],
+      );
+    } catch (e, s) {
+      log("Odsfsds ${json["rates"]}");
+
+      log("Eroor parsing", error: e,stackTrace: s);
+      rethrow;
+    }
+  }
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -398,13 +403,7 @@ class ProductPicture {
   DateTime? createdAt;
   DateTime? updatedAt;
 
-  ProductPicture({
-    this.id,
-    this.productId,
-    this.picture,
-    this.createdAt,
-    this.updatedAt,
-  });
+  ProductPicture({this.id, this.productId, this.picture, this.createdAt, this.updatedAt});
 
   factory ProductPicture.fromJson(Map<String, dynamic> json) => ProductPicture(
     id: json["id"],
@@ -432,15 +431,7 @@ class Rates {
   DateTime? createdAt;
   DateTime? updatedAt;
 
-  Rates({
-    this.id,
-    this.productId,
-    this.userId,
-    this.rate,
-    this.comment,
-    this.createdAt,
-    this.updatedAt,
-  });
+  Rates({this.id, this.productId, this.userId, this.rate, this.comment, this.createdAt, this.updatedAt});
 
   factory Rates.fromJson(Map<String, dynamic> json) => Rates(
     id: json["id"],

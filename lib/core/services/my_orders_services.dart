@@ -18,13 +18,12 @@ class MyOrderServices {
   Future<List<MyOrderModel>> getMyOrders(int page, String status) async {
     try {
       final response = await _dio.get(
-        "/BorsaNow/public/api/v1/customer/orders/${getLang()}?page=${page}",
+        "/api/v1/customer/orders/${getLang()}?page=${page}",
         queryParameters: {
           "status":status
         }
       );
 
-      print("responseresponse : ${response.data}");
 
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
@@ -40,13 +39,13 @@ class MyOrderServices {
     AppServices _services = getIt();
     try {
       final response = await _dio.get(
-          "/BorsaNow/public/api/v1/customer/order/$orderId/${getLang()}",
+          "/api/v1/customer/order/$orderId/${getLang()}",
           queryParameters: {
             "token":_services.getToken()
           }
       );
 
-      print("responseresponse : ${response.data}");
+     // print("responseresponse : ${response.data}");
 
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
@@ -62,13 +61,13 @@ class MyOrderServices {
     AppServices _services = getIt();
     try {
       final response = await _dio.post(
-          "/BorsaNow/public/api/v1/customer/order/duplicate/${getLang()}",
+          "/api/v1/customer/order/duplicate/${getLang()}",
           data: {
             "order_id":orderId
           }
       );
 
-      print("responseresponse : ${response.data}");
+      //print("responseresponse : ${response.data}");
 
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
@@ -83,14 +82,14 @@ class MyOrderServices {
 
     try {
       final response = await _dio.get(
-          "/BorsaNow/public/api/v1/customer/orders/dashboard/${getLang()}",
+          "/api/v1/customer/orders/dashboard/${getLang()}",
           queryParameters: {
             "month":month,
             "year":year
           }
       );
 
-      print("responseresponse : ${response.data}");
+     // print("responseresponse : ${response.data}");
 
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);

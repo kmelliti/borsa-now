@@ -1,34 +1,28 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:borsa_now_bis/core/config/utils.dart';
 import 'package:borsa_now_bis/core/models/lookup_model.dart';
-import 'package:borsa_now_bis/core/routes/app_routes.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
+import 'package:borsa_now_bis/core/widgets/favouriteIcon.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/ad_model.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/brand_model.dart';
 import 'package:borsa_now_bis/screens/home_page/data/models/deal_product_model.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
-import 'package:borsa_now_bis/screens/home_page/presentation/widgets/single_item_shopping_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
-import 'package:google_fonts/google_fonts.dart';
-import 'package:image_color_builder/image_color_builder.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../../../core/config/app_constants.dart';
-import '../../../../core/config/bottom_navigator.dart';
 import '../../../../core/di/di.dart';
+import '../../../../core/services/app_service.dart';
 import '../../../../core/widgets/filters.dart';
 import '../widgets/brands_widget.dart';
 import '../widgets/categories_widget.dart';
 import '../widgets/deal_details.dart';
 import '../widgets/list_related_deals.dart';
 import '../widgets/promos_widget.dart';
-import '../widgets/single_item_shopping_list.dart';
 
 ValueNotifier<bool> promosLoading = ValueNotifier(false);
 ValueNotifier<bool> categoriesLoading = ValueNotifier(false);
@@ -47,9 +41,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final HomePageController _homePageController = getIt<HomePageController>();
+  TextEditingController _searchController = TextEditingController();
 
   // ValueNotifier<Map<String,dynamic>> filters = ValueNotifier(Map());
-  ValueNotifier<Map<String, dynamic>?> filters = ValueNotifier(null);
+  final ValueNotifier<Map<String, dynamic>?> filters = ValueNotifier(null);
 
   late final _pagingController = PagingController<int, DealProductModel>(
     // getNextPageKey: (state) => (state.keys?.last ?? 0) + 1,
@@ -80,6 +75,7 @@ class _HomePageState extends State<HomePage> {
     brandsLoading.value = false;
   }
 
+  @override
   void initState() {
     // Map<String, dynamic> s = {
     //   // "categories": Uri.encodeComponent(jsonEncode([1])),
@@ -88,10 +84,16 @@ class _HomePageState extends State<HomePage> {
     //
     // filters.value = s;
 
-    fetchPromos();
-    fetchCategories();
-    fetchBrands();
 
+    getApproxLocation();
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((c) {
+      fetchPromos();
+      fetchCategories();
+      fetchBrands();
+    });
+    final AppServices appServices = getIt();
+
+    print("USer token ${appServices.getToken()}");
     super.initState();
   }
 
@@ -99,7 +101,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context, null, (v) {
-        log("$v");
+        _searchController.text = v;
+
+        if (v.isEmpty) {
+          filters.value = null;
+          _pagingController.refresh();
+          return;
+        }
         filters.value = {"product_name": v};
         _pagingController.refresh();
       }),
@@ -136,17 +144,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
 
-                      return isLoading
-                          ?
-                          // SizedBox(
-                          //     height: 126,
-                          //     child: Center(
-                          //         child: CircularProgressIndicator()
-                          //     )
-                          // ) :
-                          // ShimmerPromoWidget():
-                          Container()
-                          : PromosWidget(promos: promos);
+
                     },
                   ),
 
@@ -158,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       children: [
                         Text(
-                          "categories".tr,
+                          "category_list".tr,
                           style: Theme.of(
                             context,
                           ).textTheme.bodyLarge?.copyWith(
@@ -179,31 +177,38 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 20),
 
                   ValueListenableBuilder(
-                    valueListenable: categoriesLoading,
-                    builder: (context, isLoading, _) {
-                      return isLoading
-                          ? ShimmerFilterWidget()
-                          : CategoriesWidget(
-                            categories: categories,
-                            onItemClicked: (idsList) {
-                              if (idsList.length > 0) {
-                                Map<String, dynamic> s = filters.value ?? Map();
-                                s["categories"] = jsonEncode(idsList);
+                    valueListenable: filters,
+                    builder: (context,_,__) {
+                      return ValueListenableBuilder(
+                        valueListenable: categoriesLoading,
+                        builder: (context, isLoading, _) {
+                          return isLoading
+                              ? ShimmerFilterWidget()
+                              : CategoriesWidget(
 
-                                filters.value = s;
-                              } else {
-                                filters.value?.remove('categories');
-                              }
 
-                              if (filters.value != null) {
-                                if (filters.value!.isEmpty)
-                                  filters.value = null;
-                              }
+                                categories: categories,
+                                onItemClicked: (idsList) {
+                                  if (idsList.length > 0) {
+                                    Map<String, dynamic> s = filters.value ?? Map();
+                                    s["categories"] = jsonEncode(idsList);
 
-                              _pagingController.refresh();
-                            },
-                          );
-                    },
+                                    filters.value = s;
+                                  } else {
+                                    filters.value?.remove('categories');
+                                  }
+
+                                  if (filters.value != null) {
+                                    if (filters.value!.isEmpty)
+                                      filters.value = null;
+                                  }
+
+                                  _pagingController.refresh();
+                                },
+                              );
+                        },
+                      );
+                    }
                   ),
 
                   SizedBox(height: 40),
@@ -234,34 +239,37 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 20),
 
                   ValueListenableBuilder(
-                    valueListenable: brandsLoading,
-                    builder: (context, isLoading, _) {
-                      return isLoading
-                          ? ShimmerFilterWidget()
-                          : BrandsWidget(
-                            brands: brands,
-                            onItemClicked: (idsList) {
-                              if (idsList.length > 0) {
-                                Map<String, dynamic> s = filters.value ?? Map();
-                                s["brands"] = jsonEncode(idsList);
+                    valueListenable: filters,
+                    builder: (context,_,__) {
+                      return ValueListenableBuilder(
+                        valueListenable: brandsLoading,
+                        builder: (context, isLoading, _) {
+                          return isLoading
+                              ? ShimmerFilterWidget()
+                              : BrandsWidget(
+                                brands: brands,
+                                onItemClicked: (idsList) {
+                                  if (idsList.length > 0) {
+                                    Map<String, dynamic> s = filters.value ?? Map();
+                                    s["brands"] = jsonEncode(idsList);
 
-                                filters.value = s;
-                              } else {
-                                filters.value?.remove('brands');
-                              }
+                                    filters.value = s;
+                                  } else {
+                                    filters.value?.remove('brands');
+                                  }
 
-                              if (filters.value != null) {
-                                if (filters.value!.isEmpty)
-                                  filters.value = null;
-                              }
+                                  if (filters.value != null) {
+                                    if (filters.value!.isEmpty)
+                                      filters.value = null;
+                                  }
 
-                              _pagingController.refresh();
-                            },
-                          );
-                    },
+                                  _pagingController.refresh();
+                                },
+                              );
+                        },
+                      );
+                    }
                   ),
-
-
                 ],
               ),
             ),
@@ -285,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                                 crossAxisCount: 2,
                                 mainAxisSpacing: 10,
                                 crossAxisSpacing: 10,
-                                childAspectRatio: .66,
+                                childAspectRatio: .69,
                               ),
 
                           // Build your grid tiles
@@ -293,149 +301,7 @@ class _HomePageState extends State<HomePage> {
                               PagedChildBuilderDelegate<DealProductModel>(
                                 itemBuilder:
                                     (context, item, index) => pushUpAnimation(
-                                      InkWell(
-                                        onTap: () {
-                                          Get.to(()=>DealDetails(dealModel: item));
-                                        },
-
-                                        child:
-                                         Card(
-                                        elevation: 0.1,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
-
-                                        ),
-                                        child: Container(
-                                          padding: EdgeInsets.all(12),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Stack(
-                                                children: [
-                                                  ImageColorBuilder(
-                                                    url: "$baseUrlImage/${item.product.productPictures.first.picture}",
-                                                    fit: BoxFit.cover,
-                                                    placeholder: (c,s) {
-                                                      return Container(
-                                                        height: 132,
-                                                        decoration: BoxDecoration(
-                                                          color: HexColor.fromHex("#F4F4F4"),
-                                                          borderRadius: BorderRadius.circular(20),
-                                                         // border: Border.all(color: HexColor.fromHex(AppTheme.borderGrey)),
-                                                        ),
-                                                      );
-                                                    },
-                                                    builder: (c, image, color) {
-                                                      return Container(
-                                                        height: 132,
-
-
-                                                        decoration: BoxDecoration(
-                                                          color: color,
-                                                          borderRadius: BorderRadius.circular(20),
-                                                          border: Border.all(color: HexColor.fromHex("#F4F4F4")),
-                                                        ),
-                                                        child: ClipRRect(
-                                                          borderRadius: BorderRadius.circular(20),
-
-                                                          child: Center(child: image),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                  Positioned(
-                                                    top: 10,
-                                                    right: 10,
-                                                    child: InkWell(
-                                                      onTap: ()async{
-                                                        if(item.isFavorite){
-                                                          buildRemoveFavourite(context,item,(){
-                                                            _pagingController.refresh();
-                                                          });
-
-                                                        }else{
-                                                           _homePageController.addDeleteFav({
-                                                            "retail_listing_id":item.id,
-                                                          });
-                                                           _pagingController.refresh();
-                                                        }
-
-
-                                                      },
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          shape: BoxShape.circle,
-                                                        ),
-                                                        padding: EdgeInsets.all(8),
-                                                        child: item.isFavorite ? SvgPicture.asset(
-                                                          "assets/icons/fav.svg",
-                                                          width: 15,
-                                                        ) : Icon(Icons.favorite_border,size: 15,color: HexColor.fromHex(AppTheme.textFieldBorder),),
-                                                      ),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-
-
-
-                                              SizedBox(height: 10,),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                                child: Row(
-                                                  children: [
-                                                    Text(item.retailPrice,style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w700,
-                                                      color: HexColor.fromHex(AppTheme.primaryColor),
-                                                    ),),
-                                                    SizedBox(width: 5),
-                                                    SvgPicture.asset(
-                                                      "assets/icons/sar.svg",
-                                                      width: 15,
-                                                      height: 15,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(height: 5,),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                                                child: Row(
-                                                  children: [
-
-                                                    StarRating(
-                                                      rating: 1,
-                                                      starCount: 1,
-                                                      color: HexColor.fromHex("#FFC120"),
-                                                    ),
-                                                    SizedBox(width: 5,),
-                                                    Text(item.product.avgRate.toString() ,style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w800,
-                                                      color: HexColor.fromHex("#1E1D33"),
-                                                    ),),
-                                                  ],
-                                                ),
-                                              ),
-
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                                                child:     Text(item.product.name,maxLines :1 ,
-                                                  overflow: TextOverflow.ellipsis,style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    letterSpacing: 0.3,
-                                                    color: HexColor.fromHex("#1E1D33"),
-                                                  ),),
-                                              ),
-
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      ),
+                                      singleITem(item, context),
                                     ),
                                 noItemsFoundIndicatorBuilder:
                                     (context) =>
@@ -446,11 +312,155 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 10),
             RelatedDeals(
-              type: RelatedDealsType.list, onSelected: (DealProductModel dealModel) {
-                Get.to(()=>DealDetails(dealModel: dealModel));
-            },
+              type: RelatedDealsType.list,
+              onSelected: (DealProductModel dealModel) {
+                Get.to(() => DealDetails(dealModel: dealModel));
+              },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  InkWell singleITem(DealProductModel item, BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Get.to(() => DealDetails(dealModel: item));
+      },
+
+      child: Card(
+        elevation: 0.1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  Container(
+                    height: 132,
+
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: HexColor.fromHex("#F4F4F4"),
+                      ),
+                    ),
+                    child: ClipRRect(
+
+                      borderRadius: BorderRadius.circular(20),
+
+                      child: Image.network("$baseUrlImage/${item.product.productPictures.first.picture}",fit: BoxFit.cover,),
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    // child: InkWell(
+                    //   onTap: () async {
+                    //     if (item.isFavorite) {
+                    //       buildRemoveFavourite(context, item, () {
+                    //         _pagingController.refresh();
+                    //       });
+                    //     } else {
+                    //       _homePageController.addDeleteFav({
+                    //         "retail_listing_id": item.id,
+                    //       });
+                    //       _pagingController.refresh();
+                    //     }
+                    //   },
+                    //   child: Container(
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.white,
+                    //       shape: BoxShape.circle,
+                    //     ),
+                    //     padding: EdgeInsets.all(8),
+                    //     child:
+                    //         item.isFavorite
+                    //             ? SvgPicture.asset(
+                    //               "assets/icons/fav.svg",
+                    //               width: 15,
+                    //             )
+                    //             : Icon(
+                    //               Icons.favorite_border,
+                    //               size: 15,
+                    //               color: HexColor.fromHex(
+                    //                 AppTheme.textFieldBorder,
+                    //               ),
+                    //             ),
+                    //   ),
+                    // ),
+                    child: FavouriteIcon(itemId: item.id),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    Text(
+                      item.retailPrice,
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: HexColor.fromHex(AppTheme.primaryColor),
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                    SvgPicture.asset(
+                      "assets/icons/sar.svg",
+                      width: 15,
+                      height: 15,
+                    ),
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: Row(
+                  children: [
+                    StarRating(
+                      rating: 1,
+                      starCount: 1,
+                      color: HexColor.fromHex("#FFC120"),
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      item.product.avgRate == 0
+                          ? "--"
+                          : item.product.avgRate.toString(),
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: HexColor.fromHex("#1E1D33"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: Text(
+                  item.product.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                    color: HexColor.fromHex("#1E1D33"),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -493,6 +503,7 @@ class _HomePageState extends State<HomePage> {
                               horizontal: 20.0,
                             ),
                             child: TextField(
+                              controller: _searchController,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: "search_by_product_name".tr,
@@ -508,7 +519,14 @@ class _HomePageState extends State<HomePage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              if (_searchController.text.isEmpty) {
+                                return;
+                              }
+                              print("Called here with the product name ${_searchController.text}");
+                              filters.value = {"product_name": _searchController.text};
+                              _pagingController.refresh();
+                            },
                             child: AnimatedSwitcher(
                               duration: Duration(milliseconds: 300),
                               child: SvgPicture.asset(
@@ -528,11 +546,17 @@ class _HomePageState extends State<HomePage> {
                   builder: (context, f, _) {
                     return GestureDetector(
                       onTapDown: (details) {
-                        // This will be used for the tap effect
-                        // if(f!= null){
-                        //   filters.value = Map();
-                        //   return;
-                        // }
+                        if (filters.value != null) {
+                         categories.forEach((e)=>e.selected = false);
+                         brands.forEach((e)=>e.selected = false);
+
+
+                          filters.value = null;
+                          _searchController.text = "";
+                          _pagingController.refresh();
+
+                          return;
+                        }
                         showModalBottomSheet(
                           showDragHandle: true,
                           isScrollControlled: true,
@@ -547,10 +571,12 @@ class _HomePageState extends State<HomePage> {
                             return Filters(
                               itemsCategory: categories,
                               onFilter: (Map<String, dynamic>? f) {
+
                                 if (filters.value != null) {
                                   if (filters.value!.isEmpty)
                                     filters.value = null;
                                 }
+
 
                                 filters.value = f;
                                 _pagingController.refresh();
@@ -654,5 +680,4 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-
 }

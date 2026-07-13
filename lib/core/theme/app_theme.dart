@@ -24,7 +24,8 @@ class AppTheme {
   static final String textFieldBorder = "#CDCCE0";
   static final String textFieldSelectedBorder = "#8A899F";
   static final String borderColor = "#CDCCE0";
-  static final String primaryColor = "#2A2767";
+ // static final String primaryColor = "#2A2767";
+  static final String primaryColor = "#2aa34d";
   static final String secondaryColor = "#928FD0";
   static final String borderGrey = "#C4C4C4";
   static final String borderGreyLight = "#F0F0F0";
@@ -103,6 +104,9 @@ class AppTheme {
         bodyMedium: bodyMedium,
         bodySmall: bodySmall,
       ),
+    ),
+    iconTheme: IconThemeData(
+      color: HexColor.fromHex(primaryColor),
     ),
     // textTheme: GoogleFonts.robotoTextTheme(
     //   ThemeData.light().textTheme.copyWith(

@@ -2,10 +2,12 @@ import 'package:borsa_now_bis/core/config/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/config/app_constants.dart';
 import '../../../../core/di/di.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/favouriteIcon.dart';
 import '../../data/models/deal_product_model.dart';
 import '../manager/home_page_controller.dart';
 
@@ -81,7 +83,7 @@ class SingleItemYouMayLikeList extends StatelessWidget {
                               color: HexColor.fromHex("#FFC120"),
                             ),
                             SizedBox(width: 5,),
-                            Text(dealProductModel.product.avgRate.toString() ,style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                             Text(dealProductModel.product.avgRate == 0 ? "--" :dealProductModel.product.avgRate.toString() ,style: Theme.of(context).textTheme.displayLarge?.copyWith(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: HexColor.fromHex("#1E1D33"),
@@ -160,38 +162,39 @@ class SingleItemYouMayLikeList extends StatelessWidget {
         Positioned(
           top: 20,
           right: 20,
-          child: InkWell(
-            onTap: ()async{
-              if(dealProductModel.isFavorite){
-
-                buildRemoveFavourite(context,dealProductModel,(){
-                  dealProductModel.isFavorite = false;
-                  shakeUp.value = !shakeUp.value;
-                });
-
-              }else{
-                 _homePageController.addDeleteFav({
-                  "retail_listing_id":dealProductModel.id,
-                });
-                dealProductModel.isFavorite = true;
-                shakeUp.value = !shakeUp.value;
-
-              }
-
-
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              padding: EdgeInsets.all(8),
-              child: dealProductModel.isFavorite ? SvgPicture.asset(
-                "assets/icons/fav.svg",
-                width: 15,
-              ) : Icon(Icons.favorite_border,color: HexColor.fromHex(AppTheme.textFieldBorder),size: 15,),
-            ),
-          ),
+          child: FavouriteIcon(itemId: dealProductModel.id),
+          // child: InkWell(
+          //   onTap: ()async{
+          //     if(dealProductModel.isFavorite){
+          //
+          //       buildRemoveFavourite(context,dealProductModel,(){
+          //         dealProductModel.isFavorite = false;
+          //         shakeUp.value = !shakeUp.value;
+          //       });
+          //
+          //     }else{
+          //        _homePageController.addDeleteFav({
+          //         "retail_listing_id":dealProductModel.id,
+          //       });
+          //       dealProductModel.isFavorite = true;
+          //       shakeUp.value = !shakeUp.value;
+          //
+          //     }
+          //
+          //
+          //   },
+          //   child: Container(
+          //     decoration: BoxDecoration(
+          //       color: Colors.white,
+          //       shape: BoxShape.circle,
+          //     ),
+          //     padding: EdgeInsets.all(8),
+          //     child: dealProductModel.isFavorite ? SvgPicture.asset(
+          //       "assets/icons/fav.svg",
+          //       width: 15,
+          //     ) : Icon(Icons.favorite_border,color: HexColor.fromHex(AppTheme.textFieldBorder),size: 15,),
+          //   ),
+          // ),
         )
       ],
     );

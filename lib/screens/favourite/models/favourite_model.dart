@@ -4,11 +4,13 @@
 
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
+
 List<FavouriteModel> favouriteModelFromJson(String str) => List<FavouriteModel>.from(json.decode(str).map((x) => FavouriteModel.fromJson(x)));
 
 String favouriteModelToJson(List<FavouriteModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class FavouriteModel {
+class FavouriteModel extends Equatable{
   int id;
   int inventoryLotId;
   int productId;
@@ -74,6 +76,10 @@ class FavouriteModel {
     "is_favorite": isFavorite,
     "product": product.toJson(),
   };
+
+  @override
+
+  List<Object?> get props => [id];
 }
 
 class Product {

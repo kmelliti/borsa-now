@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:borsa_now_bis/core/models/product_pick_up_location_model.dart';
+
 List<MyOrderModel> myOrderModelFromJson(String str) => List<MyOrderModel>.from(json.decode(str).map((x) => MyOrderModel.fromJson(x)));
 
 String myOrderModelToJson(List<MyOrderModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
@@ -64,6 +66,7 @@ class MyOrderItem {
   String unitPrice;
   DateTime createdAt;
   DateTime updatedAt;
+  ProductPickUpLocation? location;
 
   MyOrderItem({
     required this.id,
@@ -73,6 +76,7 @@ class MyOrderItem {
     required this.unitPrice,
     required this.createdAt,
     required this.updatedAt,
+    this.location,
   });
 
   factory MyOrderItem.fromJson(Map<String, dynamic> json) => MyOrderItem(
@@ -81,6 +85,8 @@ class MyOrderItem {
     listingId: json["listing_id"],
     quantity: json["quantity"],
     unitPrice: json["unit_price"],
+
+    location: json["location"] == null ? null : ProductPickUpLocation.fromJson(json["location"]),
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
   );
@@ -93,5 +99,6 @@ class MyOrderItem {
     "unit_price": unitPrice,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
+    "location": location?.toJson(),
   };
 }

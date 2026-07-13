@@ -13,7 +13,7 @@ class ContactPageService {
 
     try {
 
-      final response = await _dio.post("/BorsaNow/public/api/v1/customer/contact/${getLang()}",data: {
+      final response = await _dio.post("/api/v1/customer/contact/${getLang()}",data: {
         "subject": object,
         "message": body,
       });

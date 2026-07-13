@@ -2,18 +2,13 @@ import 'package:borsa_now_bis/core/config/utils.dart';
 import 'package:borsa_now_bis/core/di/di.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/manager/home_page_controller.dart';
 import 'package:borsa_now_bis/screens/home_page/presentation/widgets/review_list.dart';
-import 'package:borsa_now_bis/screens/home_page/presentation/widgets/single_item_shopping_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:image_color_builder/image_color_builder.dart';
 import 'package:readmore/readmore.dart';
 
 import '../../../../core/config/app_constants.dart';
-import '../../../../core/config/bottom_navigator.dart';
-import '../../../../core/models/product_model.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../payment/presentation/pages/payment_page.dart';
+import '../../../cart/pages/cart_payment.dart';
 import '../../data/models/deal_product_model.dart';
 import 'list_related_deals.dart';
 
@@ -70,7 +65,7 @@ class _DealDetailsState extends State<DealDetails> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: buildAppBar(context,true),
       bottomNavigationBar: Container(
-        height: 180,
+        height: 120,
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
@@ -84,7 +79,11 @@ class _DealDetailsState extends State<DealDetails> {
 
             SizedBox(height: 10),
 
-            ElevatedButton(onPressed: () {}, child: Text("buy_now".tr)),
+            // ElevatedButton(onPressed: () {
+            //
+            //   Get.off(()=>CartPayment(isToClearCart: false,),arguments: [dealModel]);
+            //
+            // }, child: Text("buy_now".tr)),
           ],
         ),
       ),
@@ -113,31 +112,17 @@ class _DealDetailsState extends State<DealDetails> {
                             },
                             children:
                                 dealModel.product.productPictures.map((im) {
-                                  return ImageColorBuilder(
-                                    url: "${baseUrlImage}/${im.picture}",
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) {
-                                      return Container(
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Container(
+                                      // padding: EdgeInsets.symmetric(vertical: 20),
+                                      decoration: BoxDecoration(
                                         color: Colors.grey,
-                                      );
-                                    },
-                                    builder: (
-                                      BuildContext context,
-                                      Image? image,
-                                      Color? imageColor,
-                                    ) {
-                                      return ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: Container(
-                                          // padding: EdgeInsets.symmetric(vertical: 20),
-                                          decoration: BoxDecoration(
-                                            color: imageColor,
-                                          ),
-                                          child: image,
-                                        ),
-                                      );
-                                    },
+                                      ),
+                                      child: Image.network("${baseUrlImage}/${im.picture}"),
+                                    ),
                                   );
+
                                 }).toList(),
                           ),
                         ),

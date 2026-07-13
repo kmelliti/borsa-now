@@ -1,7 +1,11 @@
 import 'package:borsa_now_bis/core/config/utils.dart';
+import 'package:borsa_now_bis/core/routes/app_routes.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
+import 'package:borsa_now_bis/screens/login/presentation/manager/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../core/di/di.dart';
 
 class ResetStepThree extends StatefulWidget {
   const ResetStepThree({super.key});
@@ -16,6 +20,9 @@ class _ResetStepThreeState extends State<ResetStepThree> {
   final _confirmPasswordController = TextEditingController();
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
+  final LoginController _controller = getIt();
+  final ValueNotifier<bool> isLoading = ValueNotifier(false);
+
 
   @override
   void dispose() {
@@ -36,10 +43,10 @@ class _ResetStepThreeState extends State<ResetStepThree> {
           Text(
             "new_password".tr,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           SizedBox(height: 20,),
 
@@ -98,13 +105,33 @@ class _ResetStepThreeState extends State<ResetStepThree> {
             },
           ),
           Spacer(),
-          ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // TODO: Handle password reset
+          ValueListenableBuilder(
+              valueListenable: isLoading,
+              builder: (context,val,_) {
+                return val?getLoader(): ElevatedButton(
+                  onPressed: () async{
+                    if (_formKey.currentState!.validate()) {
+
+                      isLoading.value = true;
+                      try {
+                        Map<String,dynamic> params = _controller.params??{};
+                        params.putIfAbsent("password", ()=> _passwordController.text);
+                        params.putIfAbsent("code", ()=> _controller.code);
+
+                        await  _controller.resetPassword(params);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("pass_changed".tr)));
+
+                        Get.offAllNamed(AppRoutes.login);
+
+                      }catch(e){
+                        handleException(context, e);
+                      }
+
+                    }
+                  },
+                  child: Text('reset_password'.tr),
+                );
               }
-            },
-            child: Text('reset_password'.tr),
           )
         ],
       ),

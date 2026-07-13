@@ -34,7 +34,7 @@ class _CartPageState extends State<CartPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildTitle("my_orders".tr),
+            buildTitle("cart".tr),
             SizedBox(height: 20),
             ValueListenableBuilder(
               valueListenable: _controller.cartProducts,
@@ -60,7 +60,13 @@ class _CartPageState extends State<CartPage> {
         offstage: _controller.cartProducts.value.length == 0,
         child: InkWell(
           onTap: () {
-            Get.off(()=>CartPayment());
+            _controller.items =     _controller.cartProducts.value.map((e) => {
+            "retail_listing_id": e.id,
+            "quantity": e.cartQuantity,
+            }).toList();
+
+
+            Get.off(()=>CartPayment(isToClearCart: true,),arguments: _controller.cartProducts.value);
           },
           child: Padding(
             padding: const EdgeInsets.all(20.0),

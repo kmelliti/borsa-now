@@ -15,19 +15,19 @@ class MainScreen extends StatelessWidget {
 
 
   final items = [
-    {'icon': 'assets/icons/account.svg', 'label': 'my_account'.tr},
-    {'icon': 'assets/icons/orders.svg', 'label': 'orders'.tr},
     {'icon': 'assets/icons/home.svg', 'label': 'home'.tr},
+    {'icon': 'assets/icons/orders.svg', 'label': 'orders'.tr},
     {'icon': 'assets/icons/like.svg', 'label': 'favourite'.tr},
-    {'icon': 'assets/icons/help.svg', 'label': 'help'.tr},
+    {'icon': 'assets/icons/account.svg', 'label': 'my_account'.tr},
+    // {'icon': 'assets/icons/help.svg', 'label': 'help'.tr},
   ];
 
   final listScreens = [
-    MyAccount(),
-    MyOrders(),
     HomePage(key: Key("home"),),
+    MyOrders(),
     MyFavourites(),
-    ContactPage(),
+    MyAccount(),
+    // ContactPage(),
   ];
 
 
@@ -38,10 +38,13 @@ class MainScreen extends StatelessWidget {
       body: ValueListenableBuilder(
         valueListenable: indexWidget,
         builder: (c,i,_) {
+          if(i == 2){
+            return MyFavourites();
+          }
           return IndexedStack(index: indexWidget.value, children: listScreens);
         }
       ),
-      bottomNavigationBar: CustomBottomNav(items: items, selectedIndex: 2, onItemTapped: (int index) {
+      bottomNavigationBar: CustomBottomNav(items: items, selectedIndex: 0, onItemTapped: (int index) {
         // FocusScope.of(context).unfocus();
         indexWidget.value = index;
       }),

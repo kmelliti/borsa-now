@@ -253,7 +253,23 @@ class AppTranslation extends Translations {
       "payment_success":"تم الدفع بنجاح",
       "payment_success_sub":"تمت العملية بنجاح، يمكنك الآن متابعة طلبك أو العودة للصفحة الرئيسية.",
       "follow_request":"تتبع الطلب",
-      "sar":"ريال"
+      "sar":"ريال",
+      "no_rating":"لا يوجد تقييمات",
+      "use_borsa_credit":"استخدم رصيد المحفظة الآن",
+      "use_credit":"استخدم رصيد المحفظة",
+      "payments":"المدفوعات",
+      "personal_info":"معلوماتي الشخصية",
+      "terms_condition":"الشروط والأحكام",
+      "pass_changed":"تم تغيير كلمة المرور بنجاح",
+      "enter_mobile_email":"يرجى إدخال البريد الإلكتروني أو رقم الهاتف",
+      "wrong_otp":"رمز التحقق خاطئ",
+      "category_list":"أقسام المنتجات",
+      "pickup_location":"عنوان الإستلام",
+      "cart":"السلة",
+      "select_product_pickup":"اختر مكان إستلام المنتج ",
+      "select_products_pickup":"اختر مكان إستلام المنتجات",
+      "multiple_locations":"أكثر من نقطة إستلام",
+      "not_found":"غير متوفر"
 
 
     },

@@ -1,4 +1,5 @@
 import 'package:borsa_now_bis/core/config/utils.dart';
+import 'package:borsa_now_bis/core/models/lookup_model.dart';
 import 'package:borsa_now_bis/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,7 @@ typedef OnItemClicked = void Function(List);
 
 class CategoriesWidget extends StatefulWidget {
 
-  final List categories;
+  final List<LookUpModel> categories;
   final OnItemClicked onItemClicked ;
 
   const CategoriesWidget({
@@ -31,7 +32,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
             onTap: () {
-              print("category tapped");
+
 
 
 

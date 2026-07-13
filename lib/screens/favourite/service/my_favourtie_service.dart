@@ -20,15 +20,16 @@ class MyFavouriteService {
   Future<List<FavouriteModel>> getMyFavourites ()async{
     final AppServices appServices = getIt();
     try {
-      final response = await _dio.get("/BorsaNow/public/api/v1/customer/retail/list/favorites/${getLang()}",queryParameters: {
+      final response = await _dio.get("/api/v1/customer/retail/list/favorites/${getLang()}",queryParameters: {
         "token":appServices.getToken()
       });
-      print("sdgdsfhgsdfg : ${response.data}");
+
       if (response.data["result"] == false) {
         throw ApiException(response.data["message"]);
       }
-
-      return favouriteModelFromJson(jsonEncode(response.data['data']['data']));
+      List<FavouriteModel> favs = favouriteModelFromJson(jsonEncode(response.data['data']['data']));
+      myFavourites = favs.map((e)=>e.id).toList();
+      return favs;
     } catch (e, s) {
 
       log("$e , $s");

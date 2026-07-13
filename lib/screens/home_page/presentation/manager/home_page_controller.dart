@@ -11,6 +11,7 @@ import 'package:borsa_now_bis/core/models/product_model.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/models/order_submitted_model.dart';
+import '../../../../core/models/product_pick_up_location_model.dart';
 import '../../data/models/deal_product_model.dart';
 import '../../data/models/review_response_model.dart';
 
@@ -21,6 +22,7 @@ class HomePageController {
   final HomePageService _homePageService;
   // ValueNotifier<List<p.ProductModel>> cartProducts = ValueNotifier([]);
   ValueNotifier<List<DealProductModel>> cartProducts = ValueNotifier([]);
+  List<Map<String,dynamic> >items = [];
 
   final SharedPreferences prefs ;
 
@@ -34,6 +36,9 @@ class HomePageController {
   Future<DealProductModel>getDealDetails(int dealId) async {
 
     return await _homePageService.getDealDetails(dealId);
+  }
+  Future<List<ProductPickUpLocation>> getPickUpLocations (int productId)async{
+    return await _homePageService.getPickUpLocations(productId);
   }
 
   Future<List<AdModel>> getPromos() async {
@@ -126,9 +131,9 @@ class HomePageController {
     cartProducts.value = [...products];
   }
 
-  Future<OrderSubmittedModel> submitOrder(List<DealProductModel> products) async {
+  Future<OrderSubmittedModel> submitOrder(List<DealProductModel> products,List<Map<String,dynamic>> items) async {
 
-    return await _homePageService.submitOrder(products);
+    return await _homePageService.submitOrder(products,items);
 
   }
 }

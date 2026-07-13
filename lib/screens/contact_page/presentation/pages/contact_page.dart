@@ -24,7 +24,7 @@ class _ContactPageState extends State<ContactPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: buildAppBar(context,true),
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,

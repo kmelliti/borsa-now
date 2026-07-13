@@ -59,20 +59,20 @@ class _MyOrdersState extends State<MyOrders> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildTitle("my_orders".tr),
-              SizedBox(height: 30),
-              dateSelector(
-                (month) {
-                  _selectedMonth = int.parse(month);
-                  shakeUp.value = !shakeUp.value;
-                },
-                (year) {
-                  _selectedYear = year;
-                  shakeUp.value = !shakeUp.value;
-                },
-                listOfYears,
-              ),
-              SizedBox(height: 30),
-              dashboard(context),
+            //  SizedBox(height: 30),
+              // dateSelector(
+              //   (month) {
+              //     _selectedMonth = int.parse(month);
+              //     shakeUp.value = !shakeUp.value;
+              //   },
+              //   (year) {
+              //     _selectedYear = year;
+              //     shakeUp.value = !shakeUp.value;
+              //   },
+              //   listOfYears,
+              // ),
+              // SizedBox(height: 30),
+              // dashboard(context),
               SizedBox(height: 20),
               filterRow(context),
               SizedBox(height: 20),
@@ -257,7 +257,7 @@ class _MyOrdersState extends State<MyOrders> {
               ),
               InkWell(
                 onTap: () {
-                  filterIndex.value = 4;
+                  filterIndex.value = 5;
                   status = "cancelled";
                   _pagingController.refresh();
                 },
@@ -268,7 +268,7 @@ class _MyOrdersState extends State<MyOrders> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color:
-                        val == 4
+                        val == 5
                             ? HexColor.fromHex(AppTheme.primaryColor)
                             : Colors.white,
 
@@ -281,7 +281,7 @@ class _MyOrdersState extends State<MyOrders> {
                       "cancelled".tr,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color:
-                            val == 4
+                            val == 5
                                 ? Colors.white
                                 : HexColor.fromHex(AppTheme.primaryColor),
 
@@ -294,7 +294,7 @@ class _MyOrdersState extends State<MyOrders> {
               ),
               InkWell(
                 onTap: () {
-                  filterIndex.value = 4;
+                  filterIndex.value = 6;
                   status = "refunded";
                   _pagingController.refresh();
                 },
@@ -305,7 +305,7 @@ class _MyOrdersState extends State<MyOrders> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color:
-                        val == 4
+                        val == 6
                             ? HexColor.fromHex(AppTheme.primaryColor)
                             : Colors.white,
 
@@ -318,7 +318,7 @@ class _MyOrdersState extends State<MyOrders> {
                       "refunded".tr,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color:
-                            val == 4
+                            val == 6
                                 ? Colors.white
                                 : HexColor.fromHex(AppTheme.primaryColor),
 

@@ -25,7 +25,7 @@ class _EditPersonalInformationState extends State<EditPersonalInformation> {
 
   final MyAccountController _controller = getIt();
 
-  late final UserModel user;
+  late  UserModel user;
 
   final TextEditingController _fullNameController = TextEditingController();
 
@@ -59,7 +59,7 @@ class _EditPersonalInformationState extends State<EditPersonalInformation> {
     return Builder(
         builder: (context) {
           return Scaffold(
-        //    appBar: buildAppBar2(),
+           appBar: buildAppBar2("personal_info".tr),
             body: SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -184,7 +184,12 @@ class _EditPersonalInformationState extends State<EditPersonalInformation> {
 
                                     isLoading.value= true;
                                     try{
-                                      await _controller.updatePersonalInformation(params);
+                                    UserModel? user =   await _controller.updatePersonalInformation(params);
+                                    setState(() {
+                                      this.user = user;
+                                    });
+
+                                    _appServices.setUser(user);
                                     }catch( e,s){
 
 

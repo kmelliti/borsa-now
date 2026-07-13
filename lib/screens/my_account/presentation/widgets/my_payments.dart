@@ -52,47 +52,46 @@ class _MyPaymentsState extends State<MyPayments> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: buildAppBar2("payments".tr),
       body: Container(
-        child: Container(
-          margin: EdgeInsets.only(top: 40),
-          child:       PagingListener(
-            controller: _pagingController,
-            builder:
-                (context, state, fetchNextPage) =>
-                PagedListView<int, MyOrderModel>(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  state: state,
-                  fetchNextPage: fetchNextPage,
+        margin: EdgeInsets.all( 20),
+        child:       PagingListener(
+          controller: _pagingController,
+          builder:
+              (context, state, fetchNextPage) =>
+              PagedListView<int, MyOrderModel>(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                state: state,
+                fetchNextPage: fetchNextPage,
 
-                  builderDelegate: PagedChildBuilderDelegate(
-                      noItemsFoundIndicatorBuilder: noItemFound,
-                      itemBuilder:
-                          (context, item, index) =>
-                          Container(
-                            margin: EdgeInsets.only(bottom: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                              border: Border.all(
-                                color: HexColor.fromHex(AppTheme.borderGrey),
-                              ),
+                builderDelegate: PagedChildBuilderDelegate(
+                    noItemsFoundIndicatorBuilder: noItemFound,
+                    itemBuilder:
+                        (context, item, index) =>
+                        Container(
+                          margin: EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: HexColor.fromHex(AppTheme.borderGrey),
                             ),
-                            child: ListTile(
-                              title: Text("${"order_id".tr} : ${item.id}",style: Theme.of(context).textTheme.bodyLarge,),
-                              subtitle: Row(
-                                children: [
-                                  Text("${"date".tr}: ",style: TextStyle(color: Colors.black87),),
-                                  Text(df.format(item.createdAt)),
-                                ],
-                              ),
-                              trailing: Text
-                                ("${item.amountTotal} ${"sar".tr} ${item.paymentMethod??""}",style: TextStyle(color: Colors.green),),
+                          ),
+                          child: ListTile(
+                            title: Text("${"order_id".tr} : ${item.id}",style: Theme.of(context).textTheme.bodyLarge,),
+                            subtitle: Row(
+                              children: [
+                                Text("${"date".tr}: ",style: TextStyle(color: Colors.black87),),
+                                Text(df.format(item.createdAt)),
+                              ],
                             ),
-                          )
-                  ),
+                            trailing: Text
+                              ("${item.amountTotal} ${"sar".tr} ${item.paymentMethod??""}",style: TextStyle(color: Colors.green),),
+                          ),
+                        )
                 ),
-          ),
+              ),
         ),
       ),
     );
